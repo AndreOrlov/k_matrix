@@ -3,24 +3,29 @@ defmodule Context.ParserTest do
 
   # @tag :skip
   test "alone color" do
-    stream = """
-    A01,1,1
-    B01,1,2
-    """
-
-    res = Context.Parser.parsing(stream)
+    string =
+      """
+      A01,1,1
+      B01,1,2
+      """
+    res =
+      string_to_stream(string)
+      |> Context.Parser.parsing
 
     assert length(res) == 2
   end
 
-  @tag :skip
+  # @tag :skip
   test "double color" do
-    stream = """
-    A01,1,1
-    A01,1,2
-    """
+    string =
+      """
+      A01,1,1
+      A01,1,2
+      """
 
-    res = Context.Parser.parsing(stream)
+    res =
+      string_to_stream(string)
+      |> Context.Parser.parsing
 
     assert length(res) == 1
   end
@@ -47,5 +52,13 @@ defmodule Context.ParserTest do
     res = Context.Parser.parsing(stream)
 
     assert {:error, _} = res
+  end
+
+  defp string_to_stream(string) do
+    {:ok, stream} =
+      string
+      |> StringIO.open()
+
+    IO.binstream(stream, :line)
   end
 end

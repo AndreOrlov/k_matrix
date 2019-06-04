@@ -21,4 +21,4 @@ erl_crash.dump
 
 .env
 .env.dev
-
+.env.prod

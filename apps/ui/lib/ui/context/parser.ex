@@ -15,22 +15,26 @@ defmodule Context.Parser do
     end
   end
 
-  def build_matrix([head|tail]) do
+  def build_matrix([head|tail], matrix \\ %{}) do
     res_parsing_row =
       case head do
-        {:ok, row} -> parsing_row(row)
+        {:ok, row} -> parsing_row(row, matrix)
         {:error, msg} -> {:error, msg}
       end
 
     case res_parsing_row do
-      {:ok, parsed_row} -> {:ok, parsed_tail} = build_matrix(tail); {:ok, [parsed_row|parsed_tail]}
+      {:ok, parsed_row} ->
+        {:ok, parsed_tail} = build_matrix(tail, matrix)
+        {:ok, [parsed_row|parsed_tail]}
       {:error, msg} -> {:error, msg}
     end
   end
 
-  def build_matrix([]), do: {:ok, []}
+  def build_matrix([], matrix), do: {:ok, []}
 
-  def parsing_row(array) do
-    {:ok, array} # TODO доделать сбор color: [coords arrays]
+  def parsing_row(array, matrix) do
+    # {:ok, array} # TODO доделать сбор color: [coords arrays]
+    [key|coords] = array
+    Map.get_and_update(matrix, key, fn current_value -> [coords, current_value] end)
   end
 end

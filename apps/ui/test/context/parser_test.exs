@@ -11,6 +11,7 @@ defmodule Context.ParserTest do
     res =
       string_to_stream(string)
       |> Context.Parser.parsing
+      |> IO.inspect
 
     assert length(res) == 2
   end

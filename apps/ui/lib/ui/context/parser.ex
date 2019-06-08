@@ -28,7 +28,7 @@ defmodule Context.Parser do
 
   defp parsing_row([key | coords], matrix) do
     with {:ok, integers} <- coords_to_integer(coords),
-         {ok, matrix_updated} <- matrix_update(key, integers, matrix) do
+         {:ok, matrix_updated} <- matrix_update(key, integers, matrix) do
       {:ok, matrix_updated}
     else
       {:error, msg} ->

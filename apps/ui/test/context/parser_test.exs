@@ -13,7 +13,7 @@ defmodule Context.ParserTest do
       |> Context.Parser.parsing()
 
     assert map_size(res) == 2
-    # TODO: add check coords integer
+    assert integers?(Map.values(res))
   end
 
   # @tag :skip
@@ -28,7 +28,7 @@ defmodule Context.ParserTest do
       |> Context.Parser.parsing()
 
     assert map_size(res) == 1
-    # TODO: add check coords integer
+    assert integers?(Map.values(res))
   end
 
   # wrong format string
@@ -67,5 +67,11 @@ defmodule Context.ParserTest do
       |> StringIO.open()
 
     IO.binstream(stream, :line)
+  end
+
+  defp integers?(array) when is_list(array) do
+    array
+    |> List.flatten()
+    |> Enum.all?(&is_integer/1)
   end
 end

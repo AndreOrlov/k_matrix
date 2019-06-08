@@ -14,19 +14,11 @@ defmodule Context.Parser do
   def build_matrix(array, matrix \\ %{})
 
   def build_matrix([head | tail], matrix) do
-    res_parsing_row =
-      case head do
-        {:ok, row} -> parsing_row(row, matrix)
-        {:error, msg} -> {:error, msg}
-      end
-
-    IO.inspect(res_parsing_row, label: "RES_ROW")
-
-    case res_parsing_row do
-      {:ok, matrix_updated} ->
-        {:ok, parsed_tail, matrix_updated2} = build_matrix(tail, matrix_updated)
-        {:ok, parsed_tail, matrix_updated2}
-
+    with {:ok, row} <- head,
+         {:ok, matrix_updated} <- parsing_row(row, matrix),
+         {:ok, parsed_tail, matrix_updated2} <- build_matrix(tail, matrix_updated) do
+      {:ok, parsed_tail, matrix_updated2}
+    else
       {:error, msg} ->
         {:error, msg}
     end

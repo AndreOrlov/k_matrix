@@ -3,45 +3,47 @@ defmodule Context.ParserTest do
 
   # @tag :skip
   test "alone color" do
-    string =
-      """
-      A01,1,1
-      B01,1,2
-      """
+    string = """
+    A01,1,1
+    B01,1,2
+    """
+
     res =
       string_to_stream(string)
-      |> Context.Parser.parsing
-      |> IO.inspect
+      |> Context.Parser.parsing()
 
-    assert length(res) == 2
+    assert map_size(res) == 2
   end
 
   # @tag :skip
   test "double color" do
-    string =
-      """
-      A01,1,1
-      A01,1,2
-      """
+    string = """
+    A01,1,1
+    A01,1,2
+    """
 
     res =
       string_to_stream(string)
-      |> Context.Parser.parsing
+      |> Context.Parser.parsing()
 
-    assert length(res) == 1
+    assert map_size(res) == 1
   end
 
   # wrong format stream
 
   @tag :skip
   test "different cols in rows" do
-    stream = """
+    string = """
     A01,1,1
     B01,1,2,3
     """
-    res = Context.Parser.parsing(stream)
 
-    assert {:error, _} = res
+    res =
+      string_to_stream(string)
+      |> Context.Parser.parsing()
+      |> IO.inspect(label: "TEST")
+
+      assert {:error, _} = res
   end
 
   @tag :skip
@@ -50,6 +52,7 @@ defmodule Context.ParserTest do
     A01,4error,1
     B01,1,2
     """
+
     res = Context.Parser.parsing(stream)
 
     assert {:error, _} = res

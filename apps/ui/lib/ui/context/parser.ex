@@ -2,39 +2,53 @@ defmodule Context.Parser do
   def parsing(stream) do
     res_parsing_csv =
       stream
-      |> CSV.decode
+      |> CSV.decode()
       |> Enum.take(2)
 
-    # case res_parsing_csv do
-    #   {:ok, res} -> res
-    #   {:error, msg} -> {:error, msg}
-    # end
     case build_matrix(res_parsing_csv) do
-      {:ok, res} -> res
+      {:ok, _res, matrix} -> matrix
       {:error, msg} -> {:error, msg}
     end
   end
 
-  def build_matrix([head|tail], matrix \\ %{}) do
+  def build_matrix(array, matrix \\ %{})
+
+  def build_matrix([head | tail], matrix) do
     res_parsing_row =
       case head do
         {:ok, row} -> parsing_row(row, matrix)
         {:error, msg} -> {:error, msg}
       end
 
+    IO.inspect(res_parsing_row, label: "RES_ROW")
+
     case res_parsing_row do
-      {:ok, parsed_row} ->
-        {:ok, parsed_tail} = build_matrix(tail, matrix)
-        {:ok, [parsed_row|parsed_tail]}
-      {:error, msg} -> {:error, msg}
+      {:ok, matrix_updated} ->
+        {:ok, parsed_tail, matrix_updated2} = build_matrix(tail, matrix_updated)
+        {:ok, parsed_tail, matrix_updated2}
+
+      {:error, msg} ->
+        {:error, msg}
     end
   end
 
-  def build_matrix([], matrix), do: {:ok, []}
+  def build_matrix([], matrix), do: {:ok, [], matrix}
 
-  def parsing_row(array, matrix) do
-    # {:ok, array} # TODO доделать сбор color: [coords arrays]
-    [key|coords] = array
-    Map.get_and_update(matrix, key, fn current_value -> [coords, current_value] end)
+  def parsing_row(row, matrix) do
+    # {:ok, row} # TODO доделать сбор color: [coords arrays]
+    [key | coords] = row
+
+    {_, matrix_updated} =
+      Map.get_and_update(matrix, key, fn current_value ->
+        res_coords = if current_value, do: [coords | current_value], else: [coords]
+        IO.inspect(res_coords, label: "RES_COORDS")
+        {current_value, res_coords}
+      end)
+
+    IO.inspect(key, label: "KEY")
+    IO.inspect(coords, label: "COORDS")
+    IO.inspect(row, label: "ROW")
+    IO.inspect(matrix_updated, label: "PARS")
+    {:ok, matrix_updated}
   end
 end

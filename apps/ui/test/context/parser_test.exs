@@ -47,6 +47,8 @@ defmodule Context.ParserTest do
     assert {:error, _} = res
   end
 
+  # TODO: add case test where columns more 3th
+
   # @tag :skip
   test "wrong coordinates" do
     string = """

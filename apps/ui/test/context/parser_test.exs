@@ -1,7 +1,7 @@
 defmodule Context.ParserTest do
   use ExUnit.Case
 
-  @tag :skip
+  # @tag :skip
   test "alone color" do
     string = """
     A01,1,1
@@ -13,9 +13,10 @@ defmodule Context.ParserTest do
       |> Context.Parser.parsing()
 
     assert map_size(res) == 2
+    # TODO: add check coords integer
   end
 
-  @tag :skip
+  # @tag :skip
   test "double color" do
     string = """
     A01,1,1
@@ -27,6 +28,7 @@ defmodule Context.ParserTest do
       |> Context.Parser.parsing()
 
     assert map_size(res) == 1
+    # TODO: add check coords integer
   end
 
   # wrong format string
@@ -41,12 +43,11 @@ defmodule Context.ParserTest do
     res =
       string_to_stream(string)
       |> Context.Parser.parsing()
-      |> IO.inspect(label: "TEST")
 
     assert {:error, _} = res
   end
 
-  @tag :skip
+  # @tag :skip
   test "wrong coordinates" do
     string = """
     A01,4error,1

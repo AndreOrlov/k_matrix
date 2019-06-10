@@ -8,7 +8,7 @@
   <p>Select color</p>
   <div>
     <%= for {color, coords} <- @matrix do %>
-      <input type="radio" id="<%= color%>" name="coords" value="<%= to_json(coords)%>" <%= if color == @choiced, do: "checked" %>>
+      <input type="radio" id="<%= color%>" name="coords" value="<%= to_json(coords)%>" <%= color == @choiced && "checked" %>>
       <label for="<%= color%>"><%= color%></label>  
     <% end %>  
   </div>
@@ -16,3 +16,4 @@
     <%= submit "Submit", class: "btn btn-primary" %>
   </div>
 </form> 
+<a href="matrix">Upload form</a>

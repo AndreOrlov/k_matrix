@@ -3,10 +3,11 @@ defmodule Context.Parser do
     res_parsing_csv =
       stream
       |> CSV.decode()
-      |> Enum.take(2)
+      |> IO.inspect()
+      |> Enum.to_list()
 
     case build_matrix(res_parsing_csv) do
-      {:ok, _res, matrix} -> matrix
+      {:ok, _res, matrix} -> {:ok, matrix}
       {:error, msg} -> {:error, msg}
     end
   end

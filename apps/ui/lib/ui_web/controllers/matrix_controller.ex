@@ -3,17 +3,12 @@ defmodule UiWeb.MatrixController do
 
   def upload_file(conn, params) do
     # TODO: rad
-    Task.Supervisor.async_nolink(Ui.TaskSupervisor, fn -> IO.puts("TEST Task") end)
-
-    IO.inspect(conn, label: "CONN")
-    IO.inspect(params, label: "PAPAMS")
+    # Task.Supervisor.async_nolink(Ui.TaskSupervisor, fn -> IO.puts("TEST Task") end)
 
     render(conn, "upload_file.html", token: get_csrf_token())
   end
 
   def colors(conn, %{"coords" => coords_json, "matrix" => matrix_json} = params) do
-    IO.inspect(params, label: "PAPAMS_COLORS_2")
-
     with {:ok, coords} <- Jason.decode(coords_json),
          {:ok, matrix} <- Jason.decode(matrix_json) do
       render(conn, "colors.html",
@@ -26,13 +21,15 @@ defmodule UiWeb.MatrixController do
     end
   end
 
-  def colors(conn, params) do
-    # TODO: rad
-    matrix = %{"A01" => [[1, 1], [1, 2]], "B01" => [[1, 3]]}
-    IO.inspect(conn, label: "CONN_COLORS")
-    IO.inspect(params, label: "PAPAMS_COLORS")
-
-    render(conn, "colors.html", token: get_csrf_token(), matrix: matrix, choiced: nil)
+  def colors(conn, %{"fileToUpload" => %Plug.Upload{path: path}} = params) do
+    with {:ok, matrix} <-
+           path
+           |> path_to_stream()
+           |> Context.Parser.parsing() do
+      render(conn, "colors.html", token: get_csrf_token(), matrix: matrix, choiced: nil)
+    else
+      {:error, _} -> render(conn, "upload_file.html", token: get_csrf_token())
+    end
   end
 
   defp key_from_value(value, matrix) do
@@ -40,5 +37,11 @@ defmodule UiWeb.MatrixController do
       {key, _} -> key
       _ -> nil
     end
+  end
+
+  defp path_to_stream(path) do
+    path
+    |> Path.expand(__DIR__)
+    |> File.stream!()
   end
 end

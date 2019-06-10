@@ -2,17 +2,16 @@
   <h1><%= gettext "Welcome to %{name}!", name: "kMatrix" %></h1>
   <p>Not compromise speed</p>
 </section>
-<%= for {color, coords} <- @matrix do %>
- <form action="colors" method="post" enctype="multipart/form-data"> 
-   <div class="form-group">
-     <label>Color</label>
-     <input type="hidden" value="<%= @token %>" name="_csrf_token"/>
-     <input type="text" value="<%= to_json(coords)%>">
-     <%# <input type="file" accept=".csv" name="fileToUpload" id="fileToUpload"> %>
-   </div>
-
-   <div class="form-group">
-     <%= submit "#{color}", class: "btn btn-primary" %>
-   </div>
- </form>  
-<% end %>
+<form action="colors" method="post">
+  <input type="hidden" value="<%= @token %>" name="_csrf_token"/>
+  <p>Select color</p>
+  <div>
+    <%= for {color, coords} <- @matrix do %>
+      <input type="radio" id="<%= color%>" name="coords" value="<%= to_json(coords)%>">
+      <label for="<%= color%>"><%= color%></label>  
+    <% end %>  
+  </div>
+  <div class="form-group">
+    <%= submit "Submit", class: "btn btn-primary" %>
+  </div>
+</form> 

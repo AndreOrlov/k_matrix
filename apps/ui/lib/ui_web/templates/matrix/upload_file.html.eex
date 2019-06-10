@@ -1,16 +1,15 @@
 <section class="phx-hero">
-  <h1><%= gettext "Welcome to %{name}!", name: "Phx" %></h1>
-  <p>A pr<br/>does not compromise speed or maty.</p>
+  <h1><%= gettext "Welcome to %{name}!", name: "kMatrix" %></h1>
+  <p>Not compromise speed</p>
 </section>
-<%#= form_for [multipart: true], fn f -> %>
- <form action="upload_file.html" method="post" enctype="multipart/form-data"> 
+ <form action="colors" method="post" enctype="multipart/form-data"> 
   <div class="form-group">
-    <label>Photo</label>
-    <%=# file_input f, :photo, class: "form-control" %>
-    <input type="file" name="fileToUpload" id="fileToUpload">
+    <label>Load matrix file</label>
+    <input type="hidden" value="<%= @token %>" name="_csrf_token"/>
+    <input type="file" accept=".csv" name="fileToUpload" id="fileToUpload">
   </div>
 
   <div class="form-group">
-    <%= submit "Submit", class: "btn btn-primary" %>
+    <%= submit "Upload", class: "btn btn-primary" %>
   </div>
-<%# end %>
+</form>  

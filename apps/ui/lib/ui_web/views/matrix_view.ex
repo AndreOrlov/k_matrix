@@ -4,8 +4,4 @@ defmodule UiWeb.MatrixView do
   def to_json(data) do
     Jason.encode!(data)
   end
-
-  def from_json(json) do
-    Jason.decode!(json)
-  end
 end

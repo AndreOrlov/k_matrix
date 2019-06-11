@@ -30,7 +30,11 @@ defmodule UiWeb.MatrixController do
            |> path_to_stream()
            |> Context.Parser.parsing(),
          :ok <- validate_matrix(matrix) do
-      render(conn, "colors.html", token: get_csrf_token(), matrix: matrix, choiced: nil)
+      render(conn, "colors.html",
+        token: get_csrf_token(),
+        matrix: matrix,
+        choiced: key_first_element(matrix)
+      )
     else
       {:error, :empty} ->
         conn
@@ -51,6 +55,12 @@ defmodule UiWeb.MatrixController do
     end
   end
 
+  defp key_first_element(matrix) do
+    matrix
+    |> Map.keys()
+    |> List.first()
+  end
+
   defp path_to_stream(path) do
     path
     |> Path.expand(__DIR__)
@@ -58,6 +68,7 @@ defmodule UiWeb.MatrixController do
   end
 
   defp validate_matrix(matrix) do
+    # check length matrix
     case map_size(matrix) do
       n when n > 0 -> :ok
       n when n == 0 -> {:error, :empty}

@@ -8,7 +8,7 @@ defmodule Context.ParserTest do
     B01,1,2
     """
 
-    res =
+    {:ok, res} =
       string_to_stream(string)
       |> Context.Parser.parsing()
 
@@ -23,7 +23,7 @@ defmodule Context.ParserTest do
     A01,1,2
     """
 
-    res =
+    {:ok, res} =
       string_to_stream(string)
       |> Context.Parser.parsing()
 

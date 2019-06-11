@@ -16,4 +16,4 @@
     <%= submit "Submit", class: "btn btn-primary" %>
   </div>
 </form> 
-<a href="matrix">Upload form</a>
+<a href="matrix">Upload file</a>

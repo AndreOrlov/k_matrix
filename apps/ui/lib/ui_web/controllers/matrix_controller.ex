@@ -8,7 +8,7 @@ defmodule UiWeb.MatrixController do
     render(conn, "upload_file.html", token: get_csrf_token())
   end
 
-  def colors(conn, %{"coords" => coords_json, "matrix" => matrix_json} = params) do
+  def colors(conn, %{"coords" => coords_json, "matrix" => matrix_json}) do
     with {:ok, coords} <- Jason.decode(coords_json),
          {:ok, matrix} <- Jason.decode(matrix_json) do
       render(conn, "colors.html",
@@ -17,18 +17,30 @@ defmodule UiWeb.MatrixController do
         choiced: key_from_value(coords, matrix)
       )
     else
-      _ -> render(conn, "upload_file.html", token: get_csrf_token())
+      {:error, _} ->
+        conn
+        |> put_flash(:error, "Error json coords decode")
+        |> redirect(to: "/matrix")
     end
   end
 
-  def colors(conn, %{"fileToUpload" => %Plug.Upload{path: path}} = params) do
+  def colors(conn, %{"fileToUpload" => %Plug.Upload{path: path}}) do
     with {:ok, matrix} <-
            path
            |> path_to_stream()
-           |> Context.Parser.parsing() do
+           |> Context.Parser.parsing(),
+         :ok <- validate_matrix(matrix) do
       render(conn, "colors.html", token: get_csrf_token(), matrix: matrix, choiced: nil)
     else
-      {:error, _} -> render(conn, "upload_file.html", token: get_csrf_token())
+      {:error, :empty} ->
+        conn
+        |> put_flash(:error, "Error file is empty")
+        |> redirect(to: "/matrix")
+
+      {:error, _} ->
+        conn
+        |> put_flash(:error, "Error file parsing")
+        |> redirect(to: "/matrix")
     end
   end
 
@@ -43,5 +55,12 @@ defmodule UiWeb.MatrixController do
     path
     |> Path.expand(__DIR__)
     |> File.stream!()
+  end
+
+  defp validate_matrix(matrix) do
+    case map_size(matrix) do
+      n when n > 0 -> :ok
+      n when n == 0 -> {:error, :empty}
+    end
   end
 end

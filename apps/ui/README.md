@@ -29,6 +29,7 @@ Ready to run in production? Please [check our deployment guides](https://hexdocs
 {:ok, <<0, 0, 0, 0, 0, 0, 0, 0>>} = Circuits.SPI.transfer(ref, <<0x09, 0x00, 0x09, 0x00, 0x09, 0x00, 0x09, 0x00 >>) # no decode mode select
 {:ok, <<0, 0, 0, 0, 0, 0, 0, 0>>} = Circuits.SPI.transfer(ref, <<0x0B, 0x07, 0x0B, 0x07, 0x0B, 0x07, 0x0B, 0x07 >>) # активировать 8 строк
 {:ok, <<0, 0, 0, 0, 0, 0, 0, 0>>} = Circuits.SPI.transfer(ref, <<0x02, 0xFF, 0x02, 0xFF, 0x02, 0xFF, 0x02, 0xFF >>) # включить 8 колонок 2й строки
+{:ok, <<0, 0, 0, 0, 0, 0, 0, 0>>} = Circuits.SPI.transfer(ref, <<0x02, 0x00, 0x02, 0x00, 0x02, 0x00, 0x02, 0x00 >>) # выключить 8 колонок 2й строки
 
 или Circuits.SPI.transfer может вернуть
 {:error, :transfer_failed}

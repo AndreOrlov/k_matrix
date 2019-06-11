@@ -48,6 +48,12 @@ defmodule UiWeb.MatrixController do
     end
   end
 
+  def colors(conn, _params) do
+    conn
+    |> put_flash(:error, "Error choice file")
+    |> redirect(to: "/matrix")
+  end
+
   defp key_from_value(value, matrix) do
     case Enum.find(matrix, fn {_key, val} -> val == value end) do
       {key, _} -> key

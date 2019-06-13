@@ -31,7 +31,51 @@ defmodule Context.Tile do
   ]
   @y_default 0
 
-  # TODO: def init function
+  # shutdown tile (data not lose)
+  @tile_shutdown [0x0C, 0x00]
+  # resume tile (restore data)
+  @tile_resume [0x0C, 0x01]
+  # test on leds (switch on leds)
+  @tile_test_on [0x0F, 0x01]
+  # test off leds (switch off leds)
+  @tile_test_off [0x0F, 0x01]
+  # активировать 8 строк
+  @tile_active_rows [0x0B, 0x07]
+  # no decode mode select
+  @tile_no_decode_mode [0x09, 0x00]
+
+  # Инициализирует матрицу диодов, формирование SPI команд
+  def run(matrix, callback) do
+    {:ok, ref} = Circuits.SPI.open("spidev0.0")
+
+    {:ok, _} = Circuits.SPI.transfer(ref, command_spi(@tile_shutdown))
+    {:ok, _} = Circuits.SPI.transfer(ref, command_spi(@tile_test_on))
+    Process.sleep(3000)
+    {:ok, _} = Circuits.SPI.transfer(ref, command_spi(@tile_test_off))
+    {:ok, _} = Circuits.SPI.transfer(ref, command_spi(@tile_active_rows))
+    {:ok, _} = Circuits.SPI.transfer(ref, command_spi(@tile_no_decode_mode))
+    {:ok, _} = Circuits.SPI.transfer(ref, command_spi(@tile_resume))
+
+    # TODO: call callback function
+
+    :ok = Circuits.SPI.close(ref)
+  end
+
+  def command_spi(command) when length(command) == 2 do
+    for y_tile <- 0..(@matrix_height - 1), x_tile <- 0..(@matrix_weight - 1) do
+      command
+    end
+    |> List.flatten()
+    |> Enum.into(<<>>, &<<&1>>)
+  end
+
+  # def matrix_convert(coords) do
+  #   coords
+  #   |> Enum.map(fn [x | y] -> coord(x, y) end)
+  # end
+
+  # def coords_group(coords_spi) do
+  # end
 
   def coord(x, y) when is_integer(x) and is_integer(y) do
     IO.inspect({:div, x_div, :rem, x_rem} = div_rem(x, @cols), label: "X")

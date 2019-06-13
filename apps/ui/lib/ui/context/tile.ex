@@ -7,6 +7,8 @@ defmodule Context.Tile do
   @matrix_weight 2
   @matrix_height 2
 
+  # WARNING: команды для микросхемы MAX7219
+
   @x [
     0b10000000,
     0b01000000,

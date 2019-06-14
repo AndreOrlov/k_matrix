@@ -8,7 +8,7 @@ defmodule Context.Tile do
   @matrix_height 2
 
   # WARNING: команды для микросхемы MAX7219
-
+  # TODO: выделить в отдельный модуль сспецифичный код для микросхемы MAX7219
   @x [
     0b10000000,
     0b01000000,
@@ -71,6 +71,16 @@ defmodule Context.Tile do
     |> Enum.into(<<>>, &<<&1>>)
   end
 
+  def max7219_coord(array) do
+    Enum.map(array, fn [x | [y | _]] ->
+      coord(x, y)
+    end)
+    |> Enum.map(fn xy ->
+      List.flatten(xy)
+      |> Enum.into(<<>>, &<<&1>>)
+    end)
+  end
+
   # def matrix_convert(coords) do
   #   coords
   #   |> Enum.map(fn [x | y] -> coord(x, y) end)
@@ -89,8 +99,9 @@ defmodule Context.Tile do
         _ -> [@y_default, @x_default]
       end
     end
-    |> List.flatten()
-    |> Enum.into(<<>>, &<<&1>>)
+
+    # |> List.flatten()
+    # |> Enum.into(<<>>, &<<&1>>)
   end
 
   defp div_rem(dividend, divisor),

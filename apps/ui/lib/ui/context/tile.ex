@@ -1,5 +1,5 @@
 defmodule Context.Tile do
-  # dimensions tile
+  # dimensions tile. Tile - отдельная микросхема MAX7219 с матрицей диодов 8 х 8
   @cols 8
   @rows 8
 
@@ -47,47 +47,38 @@ defmodule Context.Tile do
   @tile_no_decode_mode [0x09, 0x00]
 
   # Инициализирует матрицу диодов, формирование SPI команд
-  def run(matrix, callback) do
+  # coords [[x1, y1], ... ,[xn, yn]]
+  def run(coords) do
     {:ok, ref} = Circuits.SPI.open("spidev0.0")
 
-    {:ok, _} = Circuits.SPI.transfer(ref, command_spi(@tile_shutdown))
-    {:ok, _} = Circuits.SPI.transfer(ref, command_spi(@tile_test_on))
+    {:ok, _} = Circuits.SPI.transfer(ref, max7219_command(@tile_shutdown))
+    {:ok, _} = Circuits.SPI.transfer(ref, max7219_command(@tile_test_on))
     Process.sleep(3000)
-    {:ok, _} = Circuits.SPI.transfer(ref, command_spi(@tile_test_off))
-    {:ok, _} = Circuits.SPI.transfer(ref, command_spi(@tile_active_rows))
-    {:ok, _} = Circuits.SPI.transfer(ref, command_spi(@tile_no_decode_mode))
-    {:ok, _} = Circuits.SPI.transfer(ref, command_spi(@tile_resume))
+    {:ok, _} = Circuits.SPI.transfer(ref, max7219_command(@tile_test_off))
+    {:ok, _} = Circuits.SPI.transfer(ref, max7219_command(@tile_active_rows))
+    {:ok, _} = Circuits.SPI.transfer(ref, max7219_command(@tile_no_decode_mode))
+    {:ok, _} = Circuits.SPI.transfer(ref, max7219_command(@tile_resume))
 
-    # TODO: call callback function
+    max7219_coord(coords)
 
     :ok = Circuits.SPI.close(ref)
   end
 
-  def command_spi(command) when length(command) == 2 do
+  # Переводит в базовые команды каждый tile матрицы
+  def max7219_command(command) when length(command) == 2 do
     for y_tile <- 0..(@matrix_height - 1), x_tile <- 0..(@matrix_weight - 1) do
       command
     end
-    |> List.flatten()
-    |> Enum.into(<<>>, &<<&1>>)
+    |> transform_to_spi()
   end
 
-  def max7219_coord(array) do
-    Enum.map(array, fn [x | [y | _]] ->
+  # coords [[x1, y1], ... ,[xn, yn]]
+  def max7219_coord(coords) do
+    Enum.map(coords, fn [x | [y | _]] ->
       coord(x, y)
     end)
-    |> Enum.map(fn xy ->
-      List.flatten(xy)
-      |> Enum.into(<<>>, &<<&1>>)
-    end)
+    |> Enum.map(&transform_to_spi/1)
   end
-
-  # def matrix_convert(coords) do
-  #   coords
-  #   |> Enum.map(fn [x | y] -> coord(x, y) end)
-  # end
-
-  # def coords_group(coords_spi) do
-  # end
 
   def coord(x, y) when is_integer(x) and is_integer(y) do
     IO.inspect({:div, x_div, :rem, x_rem} = div_rem(x, @cols), label: "X")
@@ -99,11 +90,14 @@ defmodule Context.Tile do
         _ -> [@y_default, @x_default]
       end
     end
-
-    # |> List.flatten()
-    # |> Enum.into(<<>>, &<<&1>>)
   end
 
   defp div_rem(dividend, divisor),
     do: {:div, div(dividend, divisor), :rem, rem(dividend, divisor)}
+
+  defp transform_to_spi(coords) do
+    coords
+    |> List.flatten()
+    |> Enum.into(<<>>, &<<&1>>)
+  end
 end

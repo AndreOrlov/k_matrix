@@ -20,6 +20,7 @@ erl_crash.dump
 *.ez
 
 /.elixir_ls
+/.history
 
 .env
 .env.dev

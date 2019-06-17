@@ -10,7 +10,8 @@ defmodule UiWeb.MatrixController do
 
   def colors(conn, %{"coords" => coords_json, "matrix" => matrix_json}) do
     with {:ok, coords} <- Jason.decode(coords_json),
-         {:ok, matrix} <- Jason.decode(matrix_json) do
+         {:ok, matrix} <- Jason.decode(matrix_json),
+         light_on(coords) do
       render(conn, "colors.html",
         token: get_csrf_token(),
         matrix: matrix,
@@ -79,5 +80,12 @@ defmodule UiWeb.MatrixController do
       n when n > 0 -> :ok
       n when n == 0 -> {:error, :empty}
     end
+  end
+
+  # coords [[x1, y1], ... ,[xn, yn]]
+  defp light_on(coords) do
+    Task.Supervisor.async_nolink(Ui.TaskSupervisor, fn coords ->
+      Context.Tile.run(coords)
+    end)
   end
 end

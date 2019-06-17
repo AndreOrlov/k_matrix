@@ -21,7 +21,7 @@ defmodule Context.TileTest do
     assert :ok = Context.Tile.light_off(15, 15)
   end
 
-  # @tag :skip
+  @tag :skip
   test "correct transform coord to format max7219" do
     coords = [[1, 1], [9, 9], [15, 15]]
 
@@ -32,5 +32,12 @@ defmodule Context.TileTest do
     ]
 
     assert res == Context.Tile.max7219_coord(coords)
+  end
+
+  # @tag :skip
+  test "acc coords to MAX7219" do
+    coords = [[1, 1], [2, 1], [9, 9], [10, 9], [14, 15], [15, 15]]
+
+    assert :ok == Context.Tile.max7219_transform_coord(coords)
   end
 end

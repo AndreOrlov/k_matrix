@@ -22,6 +22,8 @@ defmodule Context.Tile do
     0b00000001
   ]
   @x_default 0
+  # включить всю строку (8 диодов) в tile
+  @x_all_in_row 0b11111111
 
   @y [
     0b00000001,
@@ -54,6 +56,9 @@ defmodule Context.Tile do
     {:ok, ref} = Circuits.SPI.open("spidev0.0")
 
     {:ok, _} = Circuits.SPI.transfer(ref, max7219_command(@tile_shutdown))
+
+    Enum.each(max7219_lights_off(), &({:ok, _} = Circuits.SPI.transfer(ref, &1)))
+
     {:ok, _} = Circuits.SPI.transfer(ref, max7219_command(@tile_test_on))
     Process.sleep(3000)
     {:ok, _} = Circuits.SPI.transfer(ref, max7219_command(@tile_test_off))
@@ -61,7 +66,7 @@ defmodule Context.Tile do
     {:ok, _} = Circuits.SPI.transfer(ref, max7219_command(@tile_no_decode_mode))
     {:ok, _} = Circuits.SPI.transfer(ref, max7219_command(@tile_resume))
 
-    max7219_coord(coords)
+    Enum.each(max7219_coord(coords), &({:ok, _} = Circuits.SPI.transfer(ref, &1)))
 
     :ok = Circuits.SPI.close(ref)
   end
@@ -72,6 +77,16 @@ defmodule Context.Tile do
       command
     end
     |> transform_to_spi()
+  end
+
+  # Выключает все диоды в каждом tile матрицы
+  def max7219_lights_off() do
+    for num_row <- 0..(@rows - 1) do
+      for y_tile <- 0..(@matrix_height - 1), _x_tile <- 0..(@matrix_weight - 1) do
+        [Enum.at(@y, num_row), @x_default]
+      end
+      |> transform_to_spi()
+    end
   end
 
   # TODO: rad

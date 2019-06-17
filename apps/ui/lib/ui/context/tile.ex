@@ -73,56 +73,12 @@ defmodule Context.Tile do
     |> transform_to_spi()
   end
 
-  def max7219_transform_coord(coords) do
-    coords
-    |> Enum.map(&coord/1)
-    |> max7219_group_coord()
-  end
-
-  def max7219_group_coord([], acc), do: acc
-
-  # coords[[[2, 64], [0, 0], [0, 0], [0, 0]], [[2, 32], [0, 0], [0, 0], [0, 0]]], ...]
-  def max7219_group_coord([coord | coords], acc \\ %{}) do
-    acc_updated = max7219_acc_row(coord, acc)
-    max7219_group_coord(coords, acc_updated)
-  end
-
-  def max7219_acc_row(row, acc, -1), do: acc
-  # TODO: refactor to recursion
-  def max7219_acc_row(row, acc, qty_tiles \\ @qty_tiles - 1) do
-    use Bitwise
-    IO.inspect(row)
-    [x, y] = Enum.at(row, qty_tiles)
-
-    {_, acc_tile} =
-      Map.get_and_update(acc, qty_tiles, fn old_value ->
-        value = old_value || %{}
-
-        {_, res} =
-          Map.get_and_update(value, x, fn old_value ->
-            new_value =
-              case old_value do
-                nil -> y
-                _ -> old_value ||| y
-              end
-
-            {old_value, new_value}
-          end)
-
-        {old_value, res}
-      end)
-
-    IO.inspect(acc_tile, label: :ACC_TILE)
-    max7219_acc_row(row, acc_tile, qty_tiles - 1)
-  end
-
   # TODO: rad
   # coords [[x1, y1], ...,[xn, yn]], координаты в каждом tile (8 х 8). length(coords) == кол-во tiles (8 x 8) в матрице
   def max7219_coord(coords) do
     Enum.map(coords, fn [x | [y | _]] ->
-      coord(x, y)
+      transform_to_spi(coord(x, y))
     end)
-    |> Enum.map(&transform_to_spi/1)
   end
 
   # coord x, y - координаты во всей матрице tiles

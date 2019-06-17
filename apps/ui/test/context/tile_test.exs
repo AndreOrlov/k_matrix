@@ -38,6 +38,15 @@ defmodule Context.TileTest do
   test "acc coords to MAX7219" do
     coords = [[1, 1], [2, 1], [9, 9], [10, 9], [14, 15], [15, 15]]
 
-    assert :ok == Context.Tile.max7219_transform_coord(coords)
+    res = [
+      <<2, 64, 0, 0, 0, 0, 0, 0>>,
+      <<2, 32, 0, 0, 0, 0, 0, 0>>,
+      <<0, 0, 0, 0, 0, 0, 2, 64>>,
+      <<0, 0, 0, 0, 0, 0, 2, 32>>,
+      <<0, 0, 0, 0, 0, 0, 8, 2>>,
+      <<0, 0, 0, 0, 0, 0, 8, 1>>
+    ]
+
+    assert res == Context.Tile.max7219_coord(coords)
   end
 end

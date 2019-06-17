@@ -9,6 +9,7 @@ defmodule Context.Tile do
   @qty_tiles @matrix_weight * @matrix_height
 
   # WARNING: команды для микросхемы MAX7219
+  # ref datasheet: https://datasheets.maximintegrated.com/en/ds/MAX7219-MAX7221.pdf
   # TODO: выделить в отдельный модуль сспецифичный код для микросхемы MAX7219
   @x [
     0b10000000,
@@ -41,7 +42,7 @@ defmodule Context.Tile do
   # test on leds (switch on leds)
   @tile_test_on [0x0F, 0x01]
   # test off leds (switch off leds)
-  @tile_test_off [0x0F, 0x01]
+  @tile_test_off [0x0F, 0x00]
   # активировать 8 строк
   @tile_active_rows [0x0B, 0x07]
   # no decode mode select
@@ -103,5 +104,7 @@ defmodule Context.Tile do
     coords
     |> List.flatten()
     |> Enum.into(<<>>, &<<&1>>)
+    # TODO: rad
+    |> IO.inspect(label: :SPI_COORDS)
   end
 end

@@ -1,0 +1,15 @@
+<section class="phx-hero">
+  <h1><%= gettext "Welcome to %{name}!", name: "kMatrix" %></h1>
+  <p>Not compromise speed</p>
+</section>
+ <form action="colors" method="post" enctype="multipart/form-data"> 
+  <div class="form-group">
+    <label>Load matrix file</label>
+    <input type="hidden" value="<%= @token %>" name="_csrf_token"/>
+    <input type="file" accept=".csv" name="fileToUpload" id="fileToUpload">
+  </div>
+
+  <div class="form-group">
+    <%= submit "Upload", class: "btn btn-primary" %>
+  </div>
+</form>  

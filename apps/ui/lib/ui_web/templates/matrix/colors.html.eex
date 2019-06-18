@@ -1,0 +1,19 @@
+<section class="phx-hero">
+  <h1><%= gettext "Welcome to %{name}!", name: "kMatrix" %></h1>
+  <p>Not compromise speed</p>
+</section>
+<form action="colors" method="post">
+  <input type="hidden" value="<%= @token %>" name="_csrf_token"/>
+  <input type="hidden" value="<%= to_json(@matrix) %>" name="matrix"/>
+  <p>Select color</p>
+  <div>
+    <%= for {color, coords} <- @matrix do %>
+      <input type="radio" id="<%= color%>" name="coords" value="<%= to_json(coords)%>" <%= color == @choiced && "checked" %>>
+      <label for="<%= color%>"><%= color%></label>  
+    <% end %>  
+  </div>
+  <div class="form-group">
+    <%= submit "Submit", class: "btn btn-primary" %>
+  </div>
+</form> 
+<a href="matrix">Upload file</a>

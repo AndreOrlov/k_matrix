@@ -15,3 +15,6 @@
 
 # If the VM crashes, it generates a dump, let's ignore it too.
 erl_crash.dump
+
+# Generated 'mix firmware.gen.script' script nerves_remote_ssh
+/upload.sh 

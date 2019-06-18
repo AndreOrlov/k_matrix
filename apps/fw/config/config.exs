@@ -76,7 +76,8 @@ config :nerves_network, :default,
     ssid: System.get_env("NERVES_NETWORK_SSID"),
     psk: System.get_env("NERVES_NETWORK_PSK"),
     key_mgmt: String.to_atom(System.get_env("NERVES_NETWORK_MGMT")),
-    scan_ssid: 1 #if your WiFi setup as hidden
+    # if your WiFi setup as hidden
+    scan_ssid: 1
   ],
   eth0: [
     ipv4_address_method: :dhcp
@@ -96,3 +97,8 @@ config :ui, UiWeb.Endpoint,
 config :phoenix, :json_library, Jason
 
 config :logger, level: :debug
+
+config :nerves_firmware_ssh,
+  authorized_keys: [
+    File.read!(Path.join(System.user_home!(), ".ssh/id_rsa.pub"))
+  ]

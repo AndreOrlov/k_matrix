@@ -114,25 +114,29 @@ defmodule Context.Tile do
     end
   end
 
-  def group_coord_by_row(coords_with_tile) do
-    sorted_tile = 0
+  # Группирует колонки (x) по строкам (y) в каждом тайле, удаляет NoP ([0, 0])
+  def group_coord_by_row(coords_with_tile, @qty_tiles), do: []
 
-    coords_with_tile
-    |> Enum.map(&Enum.at(&1, sorted_tile))
-    # TODO:rad
-    |> IO.inspect(label: :COL)
-    |> Enum.sort(fn cur, next ->
-      y_cur = Enum.at(cur, -1)
-      y_next = Enum.at(next, -1)
+  def group_coord_by_row(coords_with_tile, sorted_tile \\ 0) do
+    coords_tile_groupped =
+      coords_with_tile
+      |> Enum.map(&Enum.at(&1, sorted_tile))
+      # TODO:rad
+      |> IO.inspect(label: :COL)
+      |> Enum.sort(fn cur, next ->
+        y_cur = Enum.at(cur, -1)
+        y_next = Enum.at(next, -1)
 
-      y_cur > y_next
-    end)
-    |> IO.inspect(label: :COL_SORT)
-    |> Enum.reduce([], &group_x_by_y/2)
-    # TODO:rad
-    |> IO.inspect(label: :REDUCE)
-    # Отбрасываем [0, 0]
-    |> Enum.filter(&([0, 0] != &1))
+        y_cur > y_next
+      end)
+      |> IO.inspect(label: :COL_SORT)
+      |> Enum.reduce([], &group_x_by_y/2)
+      # TODO:rad
+      |> IO.inspect(label: :REDUCE)
+      # Отбрасываем [0, 0]
+      |> Enum.filter(&([0, 0] != &1))
+
+    [coords_tile_groupped | group_coord_by_row(coords_with_tile, sorted_tile + 1)]
   end
 
   defp group_x_by_y(coord, []), do: [coord]

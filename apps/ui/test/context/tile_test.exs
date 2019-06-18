@@ -50,7 +50,7 @@ defmodule Context.TileTest do
     assert res == Context.Tile.max7219_coord(coords)
   end
 
-  # @tag :skip
+  @tag :skip
   test "lights_off commands to MAX7219" do
     res = [
       <<1, 0, 1, 0, 1, 0, 1, 0>>,
@@ -64,5 +64,19 @@ defmodule Context.TileTest do
     ]
 
     assert res == Context.Tile.max7219_lights_off()
+  end
+
+  # @tag :skip
+  test "group cols by row in tile" do
+    coords = [
+      [[1, 2], [0, 0], [0, 0], [0, 0]],
+      [[2, 1], [0, 0], [0, 0], [0, 0]],
+      [[1, 1], [0, 0], [0, 0], [0, 0]],
+      [[0, 0], [1, 2], [0, 0], [0, 0]]
+    ]
+
+    res = [[1, 2], [3, 1]]
+
+    assert res == Context.Tile.group_coord_by_row(coords)
   end
 end

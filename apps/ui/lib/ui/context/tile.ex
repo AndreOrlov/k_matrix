@@ -1,4 +1,6 @@
 defmodule Context.Tile do
+  use Bitwise
+
   # dimensions tile. Tile - отдельная микросхема MAX7219 с матрицей диодов 8 х 8
   @cols 8
   @rows 8
@@ -109,6 +111,47 @@ defmodule Context.Tile do
         {^y_div, ^x_div} -> [Enum.at(@y, y_rem), Enum.at(@x, x_rem)]
         _ -> [@y_default, @x_default]
       end
+    end
+  end
+
+  def group_coord_by_row(coords_with_tile) do
+    sorted_tile = 0
+
+    coords_with_tile
+    |> Enum.map(&Enum.at(&1, sorted_tile))
+    # TODO:rad
+    |> IO.inspect(label: :COL)
+    |> Enum.sort(fn cur, next ->
+      y_cur = Enum.at(cur, -1)
+      y_next = Enum.at(next, -1)
+
+      y_cur > y_next
+    end)
+    |> IO.inspect(label: :COL_SORT)
+    |> Enum.reduce([], &group_x_by_y/2)
+    # TODO:rad
+    |> IO.inspect(label: :REDUCE)
+    # Отбрасываем [0, 0]
+    |> Enum.filter(&([0, 0] != &1))
+  end
+
+  defp group_x_by_y(coord, []), do: [coord]
+
+  defp group_x_by_y(coord, acc) do
+    IO.inspect(acc, label: :ACC_0)
+    [x_coord | [y_coord | _]] = coord
+    [x_acc | [y_acc | _]] = Enum.at(acc, -1)
+    # TODO:rad
+    IO.inspect(coord, label: :COORd)
+    # TODO:rad
+    IO.inspect(acc, label: :ACC)
+
+    cond do
+      y_coord == y_acc ->
+        List.replace_at(acc, -1, [x_acc ||| x_coord, y_acc])
+
+      true ->
+        Enum.concat(acc, [[x_coord, y_coord]])
     end
   end
 

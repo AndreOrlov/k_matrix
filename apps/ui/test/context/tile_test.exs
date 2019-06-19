@@ -21,36 +21,19 @@ defmodule Context.TileTest do
     assert :ok = Context.Tile.light_off(15, 15)
   end
 
-  @tag :skip
+  # @tag :skip
   test "correct transform coord to format max7219" do
-    coords = [[1, 1], [9, 9], [15, 15]]
+    coords = [[1, 1], [1, 2], [2, 1], [9, 9], [15, 15]]
 
     res = [
-      <<2, 64, 0, 0, 0, 0, 0, 0>>,
-      <<0, 0, 0, 0, 0, 0, 2, 64>>,
-      <<0, 0, 0, 0, 0, 0, 8, 1>>
+      <<3, 64, 0, 0, 0, 0, 2, 64>>,
+      <<2, 32, 0, 0, 0, 0, 8, 1>>
     ]
 
     assert res == Context.Tile.max7219_coord(coords)
   end
 
-  @tag :skip
-  test "acc coords to MAX7219" do
-    coords = [[1, 1], [2, 1], [9, 9], [10, 9], [14, 15], [15, 15]]
-
-    res = [
-      <<2, 64, 0, 0, 0, 0, 0, 0>>,
-      <<2, 32, 0, 0, 0, 0, 0, 0>>,
-      <<0, 0, 0, 0, 0, 0, 2, 64>>,
-      <<0, 0, 0, 0, 0, 0, 2, 32>>,
-      <<0, 0, 0, 0, 0, 0, 8, 2>>,
-      <<0, 0, 0, 0, 0, 0, 8, 1>>
-    ]
-
-    assert res == Context.Tile.max7219_coord(coords)
-  end
-
-  @tag :skip
+  # @tag :skip
   test "lights_off commands to MAX7219" do
     res = [
       <<1, 0, 1, 0, 1, 0, 1, 0>>,
@@ -77,12 +60,32 @@ defmodule Context.TileTest do
     ]
 
     res = [
+      # [1, 1] и [2, 1] схлопывается  в [3, 1]. Ро одинаковым х в том же файле, см. команды в datasheet MAX7219
       [[1, 2], [3, 1]],
       [[1, 2]],
       [],
-      [[4,3]]
+      [[4, 3]]
     ]
 
     assert res == Context.Tile.group_coord_by_row(coords)
+  end
+
+  # @tag :skip
+  test "build matrix coordinats for tile MAX7219" do
+    max7219_matrix_coords = [
+      [[1, 2], [3, 1]],
+      [[1, 2]],
+      [],
+      [[4, 3]]
+    ]
+
+    res = [
+      [[1, 2], [3, 1]],
+      [[1, 2], [0, 0]],
+      [[0, 0], [0, 0]],
+      [[4, 3], [0, 0]]
+    ]
+
+    assert res == Context.Tile.matrix_coords(max7219_matrix_coords)
   end
 end

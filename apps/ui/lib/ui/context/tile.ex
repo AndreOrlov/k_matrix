@@ -89,12 +89,14 @@ defmodule Context.Tile do
     end
   end
 
-  # TODO: rad
   # coords [[x1, y1], ...,[xn, yn]], координаты в каждом tile (8 х 8). length(coords) == кол-во tiles (8 x 8) в матрице
   def max7219_coord(coords) do
-    Enum.map(coords, fn [x | [y | _]] ->
-      transform_to_spi(coord(x, y))
-    end)
+    coords
+    |> Enum.map(fn [x | [y | _]] -> coord(x, y) end)
+    |> group_coord_by_row()
+    |> matrix_coords()
+    |> transpose()
+    |> Enum.map(&transform_to_spi/1)
   end
 
   # coord x, y - координаты во всей матрице tiles
@@ -112,7 +114,37 @@ defmodule Context.Tile do
     end
   end
 
+  # Example max7219_matrix_coords [x, y] - [
+  #   [[1, 2], [3, 1]], leds on to 0 tile
+  #   [[1, 2]], leds on to 1 tile
+  #   [], leds on to 2 tile (nothing on)
+  #   [[4, 3]] leds on to 2 tile
+  # ]
+  def matrix_coords([head | tail] = max7219_matrix_coords) do
+    max_length =
+      max7219_matrix_coords
+      |> IO.inspect(label: :max7219_matrix_coords)
+      |> Enum.max_by(fn item -> length(item) end)
+      |> length
+
+    # Добавляем в конец каждого tile координат дефолтные координаты, для получения матрицы (одинаковая размерность команд по всем tile)
+    Enum.map(max7219_matrix_coords, fn tile_coords ->
+      len_diff = max_length - length(tile_coords)
+      default_coords = List.duplicate([@x_default, @y_default], len_diff)
+
+      tile_coords ++ default_coords
+    end)
+  end
+
   # Группирует колонки (x) по строкам (y) в каждом тайле, удаляет NoP ([0, 0])
+  # Example
+  # coords_with_tile = [
+  #   [[1, 2], [0, 0], [0, 0], [0, 0]],
+  #   [[2, 1], [0, 0], [0, 0], [0, 0]],
+  #   [[1, 1], [0, 0], [0, 0], [0, 0]],
+  #   [[0, 0], [1, 2], [0, 0], [0, 0]],
+  #   [[0, 0], [0, 0], [0, 0], [4, 3]]
+  # ]
   def group_coord_by_row(coords_with_tile, sorted_tile \\ 0)
   def group_coord_by_row(_coords_with_tile, @qty_tiles), do: []
 
@@ -142,8 +174,8 @@ defmodule Context.Tile do
 
   defp group_x_by_y(coord, acc) do
     IO.inspect(acc, label: :ACC_0)
-    [x_coord | [y_coord | _]] = coord
-    [x_acc | [y_acc | _]] = Enum.at(acc, -1)
+    [x_coord, y_coord] = coord
+    [x_acc, y_acc] = Enum.at(acc, -1)
     # TODO:rad
     IO.inspect(coord, label: :COORd)
     # TODO:rad
@@ -167,5 +199,11 @@ defmodule Context.Tile do
     |> Enum.into(<<>>, &<<&1>>)
     # TODO: rad
     |> IO.inspect(label: :SPI_COORDS)
+  end
+
+  defp transpose(rows) do
+    rows
+    |> List.zip()
+    |> Enum.map(&Tuple.to_list/1)
   end
 end

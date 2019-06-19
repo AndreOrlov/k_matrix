@@ -1,24 +1,45 @@
 defmodule Context.TileTest do
+  @moduledoc """
+    Тесты для 4х tiles MAX7219. Tile - 8 x 8 точек (диодов)
+    Расположение tiles in matrix
+    T0 T1
+    T2 T3
+  """
+
   use ExUnit.Case
 
-  @tag :skip
+  # @tag :skip
   test "light on one led (top left corner)" do
-    assert :ok = Context.Tile.light_on(1, 1)
+    res = [
+      <<8, 1, 0, 0, 0, 0, 0, 0>>
+    ]
+
+    assert res = Context.Tile.max7219_coord([[0, 0]])
   end
 
-  @tag :skip
-  test "light off one led (top left corner)" do
-    assert :ok = Context.Tile.light_off(1, 1)
-  end
-
-  @tag :skip
+  # @tag :skip
   test "light on one led (bottom right corner)" do
-    assert :ok = Context.Tile.light_on(15, 15)
+    res = [
+      <<0, 0, 0, 0, 0, 0, 8, 1>>
+    ]
+
+    assert res = Context.Tile.max7219_coord([[15, 15]])
   end
 
-  @tag :skip
-  test "light off one led (bottom right corner)" do
-    assert :ok = Context.Tile.light_off(15, 15)
+  # @tag :skip
+  test "tile light off" do
+    res = [
+      <<1, 0, 1, 0, 1, 0, 1, 0>>,
+      <<2, 0, 2, 0, 2, 0, 2, 0>>,
+      <<3, 0, 3, 0, 3, 0, 3, 0>>,
+      <<4, 0, 4, 0, 4, 0, 4, 0>>,
+      <<5, 0, 5, 0, 5, 0, 5, 0>>,
+      <<6, 0, 6, 0, 6, 0, 6, 0>>,
+      <<7, 0, 7, 0, 7, 0, 7, 0>>,
+      <<8, 0, 8, 0, 8, 0, 8, 0>>
+    ]
+
+    assert res == Context.Tile.max7219_lights_off()
   end
 
   # @tag :skip
@@ -34,7 +55,7 @@ defmodule Context.TileTest do
   end
 
   # @tag :skip
-  test "lights_off commands to MAX7219" do
+  test "all lights_off commands format MAX7219" do
     res = [
       <<1, 0, 1, 0, 1, 0, 1, 0>>,
       <<2, 0, 2, 0, 2, 0, 2, 0>>,

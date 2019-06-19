@@ -103,8 +103,8 @@ defmodule Context.Tile do
   def coord([x | [y | _]] = point_coord) when length(point_coord) == 2, do: coord(x, y)
 
   def coord(x, y) when is_integer(x) and is_integer(y) do
-    IO.inspect({:div, x_div, :rem, x_rem} = div_rem(x, @cols), label: "X")
-    IO.inspect({:div, y_div, :rem, y_rem} = div_rem(y, @rows), label: "Y")
+    {:div, x_div, :rem, x_rem} = div_rem(x, @cols)
+    {:div, y_div, :rem, y_rem} = div_rem(y, @rows)
 
     for y_coord <- 0..(@matrix_height - 1), x_coord <- 0..(@matrix_weight - 1) do
       case {y_coord, x_coord} do
@@ -123,7 +123,6 @@ defmodule Context.Tile do
   def matrix_coords([head | tail] = max7219_matrix_coords) do
     max_length =
       max7219_matrix_coords
-      |> IO.inspect(label: :max7219_matrix_coords)
       |> Enum.max_by(fn item -> length(item) end)
       |> length
 
@@ -152,18 +151,13 @@ defmodule Context.Tile do
     coords_tile_groupped =
       coords_with_tile
       |> Enum.map(&Enum.at(&1, sorted_tile))
-      # TODO:rad
-      |> IO.inspect(label: :COL)
       |> Enum.sort(fn cur, next ->
         y_cur = Enum.at(cur, -1)
         y_next = Enum.at(next, -1)
 
         y_cur > y_next
       end)
-      |> IO.inspect(label: :COL_SORT)
       |> Enum.reduce([], &group_x_by_y/2)
-      # TODO:rad
-      |> IO.inspect(label: :REDUCE)
       # Отбрасываем [0, 0]
       |> Enum.filter(&([0, 0] != &1))
 
@@ -174,13 +168,8 @@ defmodule Context.Tile do
   defp group_x_by_y(coord, []), do: [coord]
 
   defp group_x_by_y(coord, acc) do
-    IO.inspect(acc, label: :ACC_0)
     [y_coord, x_coord] = coord
     [y_acc, x_acc] = Enum.at(acc, -1)
-    # TODO:rad
-    IO.inspect(coord, label: :COORd)
-    # TODO:rad
-    IO.inspect(acc, label: :ACC)
 
     cond do
       y_coord == y_acc ->
@@ -198,8 +187,6 @@ defmodule Context.Tile do
     coords
     |> List.flatten()
     |> Enum.into(<<>>, &<<&1>>)
-    # TODO: rad
-    |> IO.inspect(label: :SPI_COORDS)
   end
 
   defp transpose(rows) do

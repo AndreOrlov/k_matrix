@@ -3,7 +3,6 @@ defmodule Context.Parser do
     res_parsing_csv =
       stream
       |> CSV.decode()
-      |> IO.inspect()
       |> Enum.to_list()
 
     case build_matrix(res_parsing_csv) do

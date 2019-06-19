@@ -24,8 +24,6 @@ defmodule Context.Tile do
     0b00000001
   ]
   @x_default 0
-  # включить всю строку (8 диодов) в tile
-  @x_all_in_row 0b11111111
 
   @y [
     0b00000001,
@@ -75,7 +73,7 @@ defmodule Context.Tile do
 
   # Переводит в базовые команды каждый tile матрицы
   def max7219_command(command) when length(command) == 2 do
-    for y_tile <- 0..(@matrix_height - 1), x_tile <- 0..(@matrix_weight - 1) do
+    for _y_tile <- 0..(@matrix_height - 1), _x_tile <- 0..(@matrix_weight - 1) do
       command
     end
     |> transform_to_spi()
@@ -84,7 +82,7 @@ defmodule Context.Tile do
   # Выключает все диоды в каждом tile матрицы
   def max7219_lights_off() do
     for num_row <- 0..(@rows - 1) do
-      for y_tile <- 0..(@matrix_height - 1), _x_tile <- 0..(@matrix_weight - 1) do
+      for _y_tile <- 0..(@matrix_height - 1), _x_tile <- 0..(@matrix_weight - 1) do
         [Enum.at(@y, num_row), @x_default]
       end
       |> transform_to_spi()
@@ -115,9 +113,10 @@ defmodule Context.Tile do
   end
 
   # Группирует колонки (x) по строкам (y) в каждом тайле, удаляет NoP ([0, 0])
-  def group_coord_by_row(coords_with_tile, @qty_tiles), do: []
+  def group_coord_by_row(coords_with_tile, sorted_tile \\ 0)
+  def group_coord_by_row(_coords_with_tile, @qty_tiles), do: []
 
-  def group_coord_by_row(coords_with_tile, sorted_tile \\ 0) do
+  def group_coord_by_row(coords_with_tile, sorted_tile) do
     coords_tile_groupped =
       coords_with_tile
       |> Enum.map(&Enum.at(&1, sorted_tile))

@@ -170,12 +170,13 @@ defmodule Context.Tile do
     [coords_tile_groupped | group_coord_by_row(coords_with_tile, sorted_tile + 1)]
   end
 
+  # ВАЖНО: coord [y, x] координаты на отдельном tile
   defp group_x_by_y(coord, []), do: [coord]
 
   defp group_x_by_y(coord, acc) do
     IO.inspect(acc, label: :ACC_0)
-    [x_coord, y_coord] = coord
-    [x_acc, y_acc] = Enum.at(acc, -1)
+    [y_coord, x_coord] = coord
+    [y_acc, x_acc] = Enum.at(acc, -1)
     # TODO:rad
     IO.inspect(coord, label: :COORd)
     # TODO:rad
@@ -183,10 +184,10 @@ defmodule Context.Tile do
 
     cond do
       y_coord == y_acc ->
-        List.replace_at(acc, -1, [x_acc ||| x_coord, y_acc])
+        List.replace_at(acc, -1, [y_acc, x_acc ||| x_coord])
 
       true ->
-        Enum.concat(acc, [[x_coord, y_coord]])
+        Enum.concat(acc, [[y_coord, x_coord]])
     end
   end
 

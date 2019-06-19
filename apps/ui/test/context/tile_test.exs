@@ -27,7 +27,7 @@ defmodule Context.TileTest do
 
     res = [
       <<3, 64, 0, 0, 0, 0, 2, 64>>,
-      <<2, 32, 0, 0, 0, 0, 8, 1>>
+      <<2, 96, 0, 0, 0, 0, 8, 1>>
     ]
 
     assert res == Context.Tile.max7219_coord(coords)
@@ -61,7 +61,7 @@ defmodule Context.TileTest do
 
     res = [
       # [1, 1] и [2, 1] схлопывается  в [3, 1]. Ро одинаковым х в том же файле, см. команды в datasheet MAX7219
-      [[1, 2], [3, 1]],
+      [[1, 3], [2 , 1]],
       [[1, 2]],
       [],
       [[4, 3]]

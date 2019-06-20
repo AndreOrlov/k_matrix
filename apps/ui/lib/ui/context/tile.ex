@@ -1,5 +1,5 @@
 defmodule Context.Tile do
-  alias Context.Tile.Max7219, as: Driver
+  alias Context.Tile.Driver
 
   # dimensions tile. Tile - отдельная микросхема MAX7219 с матрицей диодов 8 х 8
   @cols Application.get_env(:matrix, :dimensions)[:tile_cols]
@@ -40,7 +40,7 @@ defmodule Context.Tile do
   # Инициализирует матрицу диодов, формирование SPI команд
   # coords [[x1, y1], ... ,[xn, yn]]
   def run(coords) do
-    {:ok, ref} = Driver.open
+    {:ok, ref} = Driver.open()
     :ok = Driver.shutdown(ref)
     :ok = Driver.lights_off(ref)
     :ok = Driver.test_on(ref)

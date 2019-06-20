@@ -2,13 +2,14 @@ defmodule Context.Tile do
   alias Context.Tile.Max7219, as: Driver
 
   # dimensions tile. Tile - отдельная микросхема MAX7219 с матрицей диодов 8 х 8
-  @cols 8
-  @rows 8
+  @cols Application.get_env(:matrix, :dimensions)[:tile_cols]
+  @rows Application.get_env(:matrix, :dimensions)[:tile_rows]
+
+  # matrix in tiles
+  @matrix_weight Application.get_env(:matrix, :dimensions)[:weight]
+  @matrix_height Application.get_env(:matrix, :dimensions)[:height]
 
   # TODO: DYI
-  # matrix in tiles
-  @matrix_weight 2
-  @matrix_height 2
   @x_default 0
   @y_default 0
   # TODO: DYI

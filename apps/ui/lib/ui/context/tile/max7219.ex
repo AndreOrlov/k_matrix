@@ -1,25 +1,17 @@
 defmodule Context.Tile.Max7219 do
   use Bitwise
 
-  # TODO: DYI
+  # dimensions tile. Tile - отдельная микросхема MAX7219 с матрицей диодов 8 х 8
+  @rows Application.get_env(:matrix, :dimensions)[:tile_rows]
+
   # matrix in tiles
-  @matrix_weight 2
-  @matrix_height 2
+  @matrix_weight Application.get_env(:matrix, :dimensions)[:weight]
+  @matrix_height Application.get_env(:matrix, :dimensions)[:height]
   @qty_tiles @matrix_weight * @matrix_height
 
+  # TODO: DYI
   # WARNING: команды для микросхемы MAX7219
   # ref datasheet: https://datasheets.maximintegrated.com/en/ds/MAX7219-MAX7221.pdf
-  # TODO: выделить в отдельный модуль сспецифичный код для микросхемы MAX7219
-  @x [
-    0b10000000,
-    0b01000000,
-    0b00100000,
-    0b00010000,
-    0b00001000,
-    0b00000100,
-    0b00000010,
-    0b00000001
-  ]
   @x_default 0
 
   @y [
@@ -60,7 +52,7 @@ defmodule Context.Tile.Max7219 do
   end
 
   def lights_off(ref) do
-    Enum.each(__lights_off__, &({:ok, _} = Circuits.SPI.transfer(ref, &1)))
+    Enum.each(__lights_off__(), &({:ok, _} = Circuits.SPI.transfer(ref, &1)))
 
     :ok
   end
@@ -168,7 +160,7 @@ defmodule Context.Tile.Max7219 do
   #   [], # leds on to 2 tile (nothing on)
   #   [[4, 3]] # leds on to 2 tile
   # ]
-  def __matrix_coords__([head | tail] = max7219_matrix_coords) do
+  def __matrix_coords__(max7219_matrix_coords) do
     max_length =
       max7219_matrix_coords
       |> Enum.max_by(fn item -> length(item) end)

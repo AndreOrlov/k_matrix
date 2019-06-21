@@ -5,9 +5,9 @@ defmodule Context.Tile.Max7219 do
   @rows Application.get_env(:matrix, :dimensions)[:tile_rows]
 
   # matrix in tiles
-  @matrix_weight Application.get_env(:matrix, :dimensions)[:weight]
+  @matrix_widht Application.get_env(:matrix, :dimensions)[:weight]
   @matrix_height Application.get_env(:matrix, :dimensions)[:height]
-  @qty_tiles @matrix_weight * @matrix_height
+  @qty_tiles @matrix_widht * @matrix_height
 
   # TODO: DYI
   # WARNING: команды для микросхемы MAX7219
@@ -130,7 +130,7 @@ defmodule Context.Tile.Max7219 do
 
   # Переводит в базовые команды каждый tile матрицы
   def __command__(command) when length(command) == 2 do
-    for _y_tile <- 0..(@matrix_height - 1), _x_tile <- 0..(@matrix_weight - 1) do
+    for _y_tile <- 0..(@matrix_height - 1), _x_tile <- 0..(@matrix_widht - 1) do
       command
     end
     |> transform_to_spi()
@@ -139,7 +139,7 @@ defmodule Context.Tile.Max7219 do
   # Выключает все диоды в каждом tile матрицы
   def __lights_off__ do
     for num_row <- 0..(@rows - 1) do
-      for _ <- 0..(@matrix_height - 1), _ <- 0..(@matrix_weight - 1) do
+      for _ <- 0..(@matrix_height - 1), _ <- 0..(@matrix_widht - 1) do
         [Enum.at(@y, num_row), @x_default]
       end
       |> transform_to_spi()

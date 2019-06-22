@@ -12,23 +12,42 @@ defmodule Context.Tile.Max7219Test do
   test "global correct coords to coords by tiles" do
     coords = [
       # left top corner. T0
-      [0, 0],
+      [1, 1],
       # T1
-      [8, 0],
+      [9, 1],
       # T2
-      [0, 8],
+      [1, 9],
       # bottom right corner. T3
-      [15, 15]
+      [16, 16]
     ]
 
     res = [
-      [[0, 0], [], [], []],
-      [[], [0, 0], [], []],
-      [[], [], [0, 0], []],
-      [[], [], [], [7, 7]]
+      [[0, 0]],
+      [[0, 0]],
+      [[0, 0]],
+      [[7, 7]]
     ]
 
-    assert res == Context.Tile.coord(coords)
+    assert res == Context.Tile.__coord_by_tiles__(coords)
+  end
+
+  # @tag :skip
+  test "correct coords to some coords in ome tiles" do
+    coords = [
+      # left top corner. T0
+      [1, 1],
+      # T0
+      [2, 1]
+    ]
+
+    res = [
+      [[0, 0], [0, 1]],
+      [],
+      [],
+      []
+    ]
+
+    assert res == Context.Tile.__coord_by_tiles__(coords)
   end
 
   # @tag :skip
@@ -37,15 +56,15 @@ defmodule Context.Tile.Max7219Test do
       [-1, -1]
     ]
 
-    assert_raise FunctionClauseError, fn -> Context.Tile.coord(coords) end
+    assert_raise FunctionClauseError, fn -> Context.Tile.__coord_by_tiles__(coords) end
   end
 
   # @tag :skip
   test "wrong range coords to coords by tiles" do
     coords = [
-      [16, 16]
+      [17, 17]
     ]
 
-    assert_raise FunctionClauseError, fn -> Context.Tile.coord(coords) end
+    assert_raise FunctionClauseError, fn -> Context.Tile.__coord_by_tiles__(coords) end
   end
 end

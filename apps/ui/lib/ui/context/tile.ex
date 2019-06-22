@@ -9,34 +9,6 @@ defmodule Context.Tile do
   @matrix_width Application.get_env(:matrix, :dimensions)[:weight]
   @matrix_height Application.get_env(:matrix, :dimensions)[:height]
 
-  # TODO: DYI
-  @x_default 0
-  @y_default 0
-  # TODO: DYI
-  # WARNING: команды для микросхемы MAX7219
-  # ref datasheet: https://datasheets.maximintegrated.com/en/ds/MAX7219-MAX7221.pdf
-  # TODO: выделить в отдельный модуль сспецифичный код для микросхемы MAX7219
-  @x [
-    0b10000000,
-    0b01000000,
-    0b00100000,
-    0b00010000,
-    0b00001000,
-    0b00000100,
-    0b00000010,
-    0b00000001
-  ]
-  @y [
-    0b00000001,
-    0b00000010,
-    0b00000011,
-    0b00000100,
-    0b00000101,
-    0b00000110,
-    0b00000111,
-    0b00001000
-  ]
-
   # Инициализирует матрицу диодов, формирование SPI команд
   # coords [[x1, y1], ... ,[xn, yn]]
   def run(coords) do
@@ -70,9 +42,7 @@ defmodule Context.Tile do
 
   # Перевести сначала в обычные координаты и поменять местами x, y.
   # В коорд. макс7219 переведет Context.Tile.Max7219
-  # coord x, y - координаты во всей матрицеб разбитые по tiles
-  def coord([x, y] = point_coord) when length(point_coord) == 2, do: coord(x, y)
-
+  # coord x, y - координаты во всей матрице, разбитые по tiles
   def coord(x, y) when is_valid_coord(x, y) do
     {:div, x_div, :rem, x_rem} = div_rem(x, @cols)
     {:div, y_div, :rem, y_rem} = div_rem(y, @rows)
@@ -89,7 +59,7 @@ defmodule Context.Tile do
   end
 
   # coords [[x1, y1], ...,[xn, yn]], координаты в каждом tile.
-  def coord(coords) do
+  def coord([[_, _] | _] = coords) do
     coords
     |> Enum.map(fn [x, y] -> coord(x, y) end)
   end

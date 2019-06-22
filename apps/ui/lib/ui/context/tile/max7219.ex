@@ -194,17 +194,8 @@ defmodule Context.Tile.Max7219 do
   defp group_x_by_y(coord, []), do: [coord]
 
   defp group_x_by_y(coord, acc) do
-    [y_coord, x_coord] =
-      case coord do
-        [_, _] -> coord
-        _ -> [0, 0]
-      end
-
-    [y_acc, x_acc] =
-      case res = Enum.at(acc, -1) do
-        [y, x] -> [y, x]
-        [] -> [0, 0]
-      end
+    [y_coord, x_coord] = coord
+    [y_acc, x_acc] = Enum.at(acc, -1)
 
     cond do
       y_coord == y_acc ->

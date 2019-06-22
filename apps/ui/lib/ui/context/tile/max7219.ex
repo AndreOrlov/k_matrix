@@ -148,6 +148,7 @@ defmodule Context.Tile.Max7219 do
 
   def __coord__(coords) do
     coords
+    |> translate_coord_to_max7219
     |> group_coord_by_row
     |> __matrix_coords__
     |> transpose()
@@ -212,5 +213,12 @@ defmodule Context.Tile.Max7219 do
       true ->
         Enum.concat(acc, [[y_coord, x_coord]])
     end
+  end
+
+  defp translate_coord_to_max7219(coords) do
+    coords
+    |> Enum.map( fn coord ->
+
+    end)
   end
 end

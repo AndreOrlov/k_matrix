@@ -1,6 +1,6 @@
-defmodule Context.TileTest do
+defmodule Context.Tile.Max7219Test do
   @moduledoc """
-    Тесты для 4х tiles MAX7219. Tile - 8 x 8 точек (диодов)
+    Тесты для 4х tiles. Tile - 8 x 8 точек (диодов)
     Расположение tiles in matrix
     T0 T1
     T2 T3
@@ -9,104 +9,62 @@ defmodule Context.TileTest do
   use ExUnit.Case
 
   # @tag :skip
-  test "light on one led (top left corner)" do
-    res = [
-      <<8, 1, 0, 0, 0, 0, 0, 0>>
-    ]
-
-    assert res = Context.Tile.max7219_coord([[0, 0]])
-  end
-
-  # @tag :skip
-  test "light on one led (bottom right corner)" do
-    res = [
-      <<0, 0, 0, 0, 0, 0, 8, 1>>
-    ]
-
-    assert res = Context.Tile.max7219_coord([[15, 15]])
-  end
-
-  # @tag :skip
-  test "tile light off" do
-    res = [
-      <<1, 0, 1, 0, 1, 0, 1, 0>>,
-      <<2, 0, 2, 0, 2, 0, 2, 0>>,
-      <<3, 0, 3, 0, 3, 0, 3, 0>>,
-      <<4, 0, 4, 0, 4, 0, 4, 0>>,
-      <<5, 0, 5, 0, 5, 0, 5, 0>>,
-      <<6, 0, 6, 0, 6, 0, 6, 0>>,
-      <<7, 0, 7, 0, 7, 0, 7, 0>>,
-      <<8, 0, 8, 0, 8, 0, 8, 0>>
-    ]
-
-    assert res == Context.Tile.max7219_lights_off()
-  end
-
-  # @tag :skip
-  test "correct transform coord to format max7219" do
-    coords = [[1, 1], [1, 2], [2, 1], [9, 9], [15, 15]]
-
-    res = [
-      <<3, 64, 0, 0, 0, 0, 2, 64>>,
-      <<2, 96, 0, 0, 0, 0, 8, 1>>
-    ]
-
-    assert res == Context.Tile.max7219_coord(coords)
-  end
-
-  # @tag :skip
-  test "all lights_off commands format MAX7219" do
-    res = [
-      <<1, 0, 1, 0, 1, 0, 1, 0>>,
-      <<2, 0, 2, 0, 2, 0, 2, 0>>,
-      <<3, 0, 3, 0, 3, 0, 3, 0>>,
-      <<4, 0, 4, 0, 4, 0, 4, 0>>,
-      <<5, 0, 5, 0, 5, 0, 5, 0>>,
-      <<6, 0, 6, 0, 6, 0, 6, 0>>,
-      <<7, 0, 7, 0, 7, 0, 7, 0>>,
-      <<8, 0, 8, 0, 8, 0, 8, 0>>
-    ]
-
-    assert res == Context.Tile.max7219_lights_off()
-  end
-
-  # @tag :skip
-  test "group cols by row in tile" do
+  test "global correct coords to coords by tiles" do
     coords = [
-      [[1, 2], [0, 0], [0, 0], [0, 0]],
-      [[2, 1], [0, 0], [0, 0], [0, 0]],
-      [[1, 1], [0, 0], [0, 0], [0, 0]],
-      [[0, 0], [1, 2], [0, 0], [0, 0]],
-      [[0, 0], [0, 0], [0, 0], [4, 3]]
+      # left top corner. T0
+      [1, 1],
+      # T1
+      [9, 1],
+      # T2
+      [1, 9],
+      # bottom right corner. T3
+      [16, 16]
     ]
 
     res = [
-      # [1, 1] и [2, 1] схлопывается  в [3, 1]. Ро одинаковым х в том же файле, см. команды в datasheet MAX7219
-      [[1, 3], [2 , 1]],
-      [[1, 2]],
-      [],
-      [[4, 3]]
+      [[0, 0]],
+      [[0, 0]],
+      [[0, 0]],
+      [[7, 7]]
     ]
 
-    assert res == Context.Tile.group_coord_by_row(coords)
+    assert res == Context.Tile.__coord_by_tiles__(coords)
   end
 
   # @tag :skip
-  test "build matrix coordinats for tile MAX7219" do
-    max7219_matrix_coords = [
-      [[1, 2], [3, 1]],
-      [[1, 2]],
-      [],
-      [[4, 3]]
+  test "correct coords to some coords in ome tiles" do
+    coords = [
+      # left top corner. T0
+      [1, 1],
+      # T0
+      [2, 1]
     ]
 
     res = [
-      [[1, 2], [3, 1]],
-      [[1, 2], [0, 0]],
-      [[0, 0], [0, 0]],
-      [[4, 3], [0, 0]]
+      [[0, 0], [0, 1]],
+      [],
+      [],
+      []
     ]
 
-    assert res == Context.Tile.matrix_coords(max7219_matrix_coords)
+    assert res == Context.Tile.__coord_by_tiles__(coords)
+  end
+
+  # @tag :skip
+  test "wrong negative coords to coords by tiles" do
+    coords = [
+      [-1, -1]
+    ]
+
+    assert_raise FunctionClauseError, fn -> Context.Tile.__coord_by_tiles__(coords) end
+  end
+
+  # @tag :skip
+  test "wrong range coords to coords by tiles" do
+    coords = [
+      [17, 17]
+    ]
+
+    assert_raise FunctionClauseError, fn -> Context.Tile.__coord_by_tiles__(coords) end
   end
 end

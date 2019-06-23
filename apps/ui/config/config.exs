@@ -14,6 +14,12 @@ config :ui, UiWeb.Endpoint,
   render_errors: [view: UiWeb.ErrorView, accepts: ~w(html json)],
   pubsub: [name: Ui.PubSub, adapter: Phoenix.PubSub.PG2]
 
+config :matrix, :dimensions,
+  height: 2,
+  weight: 2,
+  tile_rows: 8,
+  tile_cols: 8
+
 # Configures Elixir's Logger
 config :logger, :console,
   format: "$time $metadata[$level] $message\n",

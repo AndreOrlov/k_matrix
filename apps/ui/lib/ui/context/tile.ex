@@ -10,21 +10,50 @@ defmodule Context.Tile do
   @matrix_height Application.get_env(:matrix, :dimensions)[:height]
 
   # Инициализирует матрицу диодов, формирование SPI команд
-  # coords [[x1, y1], ... ,[xn, yn]]
-  def run(coords) do
+  def init() do
     {:ok, ref} = Driver.open()
+
+    # Не горят диоды, но команды можно отправлять при ткаом режиме
     :ok = Driver.shutdown(ref)
-    :ok = Driver.lights_off(ref)
-    :ok = Driver.test_on(ref)
 
-    Process.sleep(3000)
+    # Настройка start
 
-    :ok = Driver.test_off(ref)
+    # Активировать все строки диодов в матрице
     :ok = Driver.activate_rows(ref)
+
+    # Отключить декодирование сегментов (у нас диоды, а не цифровые сегменты)
     :ok = Driver.disable_code(ref)
+
+    # Настройка end
+
+    # Погасить все, ранее включенные диоды
+    :ok = Driver.lights_off(ref)
+
+    # Проверка исправности диодов
+    :ok = Driver.test_on(ref)
+    Process.sleep(3000)
+    :ok = Driver.test_off(ref)
+
+    # Выйти из режима shutdown
     :ok = Driver.resume(ref)
 
+    :ok = Driver.close(ref)
+  end
+
+  # coords [[x1, y1], ... ,[xn, yn]]
+  def send_coords(coords) do
+    {:ok, ref} = Driver.open()
+
+    # Не горят диоды, но команды можно отправлять при ткаом режиме
+    :ok = Driver.shutdown(ref)
+
+    # Погасить все, ранее включенные диоды
+    :ok = Driver.lights_off(ref)
+
     :ok = Driver.lights_on_by_coords(ref, __coord_by_tiles__(coords))
+
+    # Выйти из режима shutdown
+    :ok = Driver.resume(ref)
 
     :ok = Driver.close(ref)
   end
@@ -45,8 +74,8 @@ defmodule Context.Tile do
   #   разбитые по tiles, с началом координат [0, 0],
   #   координаты поменяны местами [y, x]
   def __coord_by_tiles__(x, y) when is_valid_coord(x, y) do
-    {:div, x_div, :rem, x_rem} = div_rem((x - 1), @cols)
-    {:div, y_div, :rem, y_rem} = div_rem((y - 1), @rows)
+    {:div, x_div, :rem, x_rem} = div_rem(x - 1, @cols)
+    {:div, y_div, :rem, y_rem} = div_rem(y - 1, @rows)
 
     for y_tile <- 0..(@matrix_height - 1), x_tile <- 0..(@matrix_width - 1) do
       case {y_tile, x_tile} do
@@ -60,7 +89,7 @@ defmodule Context.Tile do
   def __coord_by_tiles__([[_, _] | _] = coords) do
     coords
     |> Enum.map(fn [x, y] -> __coord_by_tiles__(x, y) end)
-    |> Context.Tile.Helpers.transpose
+    |> Context.Tile.Helpers.transpose()
     |> Enum.map(fn coords_tile ->
       Enum.filter(coords_tile, & &1)
     end)

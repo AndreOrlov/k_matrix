@@ -81,6 +81,6 @@ defmodule UiWeb.MatrixController do
 
   # coords [[x1, y1], ... ,[xn, yn]]
   defp light_on(coords) do
-    Task.Supervisor.async_nolink(Ui.TaskSupervisor, fn -> Context.Tile.run(coords) end)
+    Context.Matrix.send_coords(coords)
   end
 end

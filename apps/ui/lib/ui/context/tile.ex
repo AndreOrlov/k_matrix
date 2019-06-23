@@ -60,7 +60,7 @@ defmodule Context.Tile do
   def __coord_by_tiles__([[_, _] | _] = coords) do
     coords
     |> Enum.map(fn [x, y] -> __coord_by_tiles__(x, y) end)
-    |> transpose
+    |> Context.Tile.Helpers.transpose
     |> Enum.map(fn coords_tile ->
       Enum.filter(coords_tile, & &1)
     end)
@@ -68,10 +68,4 @@ defmodule Context.Tile do
 
   defp div_rem(dividend, divisor),
     do: {:div, div(dividend, divisor), :rem, rem(dividend, divisor)}
-
-  defp transpose(rows) do
-    rows
-    |> List.zip()
-    |> Enum.map(&Tuple.to_list/1)
-  end
 end

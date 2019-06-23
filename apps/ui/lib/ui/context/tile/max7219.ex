@@ -111,7 +111,7 @@ defmodule Context.Tile.Max7219 do
     |> Enum.map(&translate_coord_to_max7219/1)
     |> group_coord_by_row
     |> __matrix_coords__
-    |> transpose
+    |> Context.Tile.Helpers.transpose
     |> Enum.map(&transform_to_spi/1)
   end
 
@@ -202,12 +202,5 @@ defmodule Context.Tile.Max7219 do
   defp translate_coord_to_max7219(coords_tile) do
     coords_tile
     |> Enum.map(fn [y, x] -> [Enum.at(@y, y), Enum.at(@x, x)] end)
-  end
-
-  # TODO: to helper
-  defp transpose(rows) do
-    rows
-    |> List.zip()
-    |> Enum.map(&Tuple.to_list/1)
   end
 end

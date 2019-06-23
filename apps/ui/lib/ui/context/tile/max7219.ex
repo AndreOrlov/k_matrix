@@ -98,7 +98,7 @@ defmodule Context.Tile.Max7219 do
   end
 
   def lights_on_by_coords(ref, coords) do
-    Enum.each(__coord__(coords), &({:ok, _} = @spi.transfer(ref, &1)))
+    Enum.each(__transfer_coords__(coords), &({:ok, _} = @spi.transfer(ref, &1)))
 
     :ok
   end
@@ -107,8 +107,7 @@ defmodule Context.Tile.Max7219 do
     :ok = @spi.close(ref)
   end
 
-  # TODO: rename as regular function
-  def __coord__(coords) do
+  def __transfer_coords__(coords) do
     coords
     |> Enum.map(&translate_coord_to_max7219/1)
     |> group_coord_by_row

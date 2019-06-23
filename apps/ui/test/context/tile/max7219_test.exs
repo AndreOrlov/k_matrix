@@ -13,7 +13,7 @@ defmodule Context.Tile.Max7219Test do
     coords = [[[0, 0]], [], [], []]
     res = [<<1, 128, 0, 0, 0, 0, 0, 0>>]
 
-    assert res == Context.Tile.Max7219.__coord__(coords)
+    assert res == Context.Tile.Max7219.__transfer_coords__(coords)
   end
 
   # @tag :skip
@@ -23,7 +23,7 @@ defmodule Context.Tile.Max7219Test do
       <<0, 0, 0, 0, 0, 0, 8, 1>>
     ]
 
-    assert res == Context.Tile.Max7219.__coord__(coords)
+    assert res == Context.Tile.Max7219.__transfer_coords__(coords)
   end
 
   # @tag :skip
@@ -56,7 +56,7 @@ defmodule Context.Tile.Max7219Test do
       <<2, 160, 0, 0, 0, 0, 0, 0>>
     ]
 
-    assert res == Context.Tile.Max7219.__coord__(coords)
+    assert res == Context.Tile.Max7219.__transfer_coords__(coords)
   end
 
   # @tag :skip

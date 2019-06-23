@@ -116,44 +116,41 @@ defmodule Context.Tile.Max7219 do
     |> IO.inspect(label: :AFTER_GROUP_ROW)
     |> __matrix_coords__
     |> IO.inspect(label: :AFTER_MATRIX_COORDS)
+    |> transpose
     |> Enum.map(&transform_to_spi/1)
   end
 
-  # Группирует колонки (x) по строкам (y) в каждом тайле, удаляет NoP ([0, 0])
+  # Группирует колонки (x) по строкам (y) в каждом тайле
   # Example
   # coords_with_tile = [
-  #   [[1, 2], [0, 0], [0, 0], [0, 0]],
-  #   [[2, 1], [0, 0], [0, 0], [0, 0]],
-  #   [[1, 1], [0, 0], [0, 0], [0, 0]],
-  #   [[0, 0], [1, 2], [0, 0], [0, 0]],
-  #   [[0, 0], [0, 0], [0, 0], [4, 3]]
+  #   [[1, 128], [1, 64], [2, 16]], # [y, x] tile T0
+  #   [], # [y, x] tile T1
+  #   [], # [y, x] tile T2
+  #   [] # [y, x] tile T3
   # ]
   def group_coord_by_row(coords_with_tile, sorted_tile \\ 0)
   def group_coord_by_row(_coords_with_tile, @qty_tiles), do: []
 
-  def group_coord_by_row(coords_with_tile, sorted_tile) do
+  def group_coord_by_row(coords_with_tile, sorted_tile) do # TODO sorted_tile remove?
     IO.inspect(sorted_tile, label: :sorted_tile)
+
     coords_tile_groupped =
       coords_with_tile
       |> IO.inspect(label: :coords_with_tile)
       # |> Enum.map(&Enum.at(&1, sorted_tile))
       |> IO.inspect(label: :before_sort)
-      |> Enum.sort(fn cur, next ->
-        y_cur = Enum.at(cur, -1)
-        y_next = Enum.at(next, -1)
-
-        y_cur > y_next
-      end)
+      |> Enum.map(&Enum.sort/1)
       |> IO.inspect(label: :after_sort)
+      # Группируем по y в tile
       |> Enum.map(fn coords_tile ->
         Enum.reduce(coords_tile, [], &group_x_by_y/2)
       end)
       |> IO.inspect(label: :after_group)
       # Отбрасываем [0, 0]
-      |> Enum.filter(&([0, 0] != &1))
+      # |> Enum.filter(&([0, 0] != &1))
       |> IO.inspect(label: :after_zero)
 
-    [coords_tile_groupped | group_coord_by_row(coords_with_tile, sorted_tile + 1)]
+    # [coords_tile_groupped | group_coord_by_row(coords_with_tile, sorted_tile + 1)]
   end
 
   # ДСП
@@ -221,10 +218,19 @@ defmodule Context.Tile.Max7219 do
     end
   end
 
-  defp translate_coord_to_max7219([]), do: [[@y_default, @x_default]]
+  defp translate_coord_to_max7219([]), do: []
 
   defp translate_coord_to_max7219(coords_tile) do
     coords_tile
     |> Enum.map(fn [y, x] -> [Enum.at(@y, y), Enum.at(@x, x)] end)
+  end
+
+  # TODO: to helper
+  defp transpose(rows) do
+    rows
+    |> List.zip()
+    |> IO.inspect(label: :AFTER_ZIP)
+    |> Enum.map(&Tuple.to_list/1)
+    |> IO.inspect(label: :AFTER_TO_LIST)
   end
 end

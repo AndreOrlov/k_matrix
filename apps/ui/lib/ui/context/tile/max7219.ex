@@ -12,6 +12,16 @@ defmodule Context.Tile.Max7219 do
   # TODO: DYI
   # WARNING: команды для микросхемы MAX7219
   # ref datasheet: https://datasheets.maximintegrated.com/en/ds/MAX7219-MAX7221.pdf
+  @x [
+    0b10000000,
+    0b01000000,
+    0b00100000,
+    0b00010000,
+    0b00001000,
+    0b00000100,
+    0b00000010,
+    0b00000001
+  ]
   @x_default 0
 
   @y [
@@ -97,6 +107,18 @@ defmodule Context.Tile.Max7219 do
     :ok = Circuits.SPI.close(ref)
   end
 
+  # TODO: rename as regular function
+  def __coord__(coords) do
+    coords
+    |> Enum.map(&translate_coord_to_max7219/1)
+    |> IO.inspect(label: :AFTER_TRANSLATE)
+    |> group_coord_by_row
+    |> IO.inspect(label: :AFTER_GROUP_ROW)
+    |> __matrix_coords__
+    |> IO.inspect(label: :AFTER_MATRIX_COORDS)
+    |> Enum.map(&transform_to_spi/1)
+  end
+
   # Группирует колонки (x) по строкам (y) в каждом тайле, удаляет NoP ([0, 0])
   # Example
   # coords_with_tile = [
@@ -110,18 +132,26 @@ defmodule Context.Tile.Max7219 do
   def group_coord_by_row(_coords_with_tile, @qty_tiles), do: []
 
   def group_coord_by_row(coords_with_tile, sorted_tile) do
+    IO.inspect(sorted_tile, label: :sorted_tile)
     coords_tile_groupped =
       coords_with_tile
-      |> Enum.map(&Enum.at(&1, sorted_tile))
+      |> IO.inspect(label: :coords_with_tile)
+      # |> Enum.map(&Enum.at(&1, sorted_tile))
+      |> IO.inspect(label: :before_sort)
       |> Enum.sort(fn cur, next ->
         y_cur = Enum.at(cur, -1)
         y_next = Enum.at(next, -1)
 
         y_cur > y_next
       end)
-      |> Enum.reduce([], &group_x_by_y/2)
+      |> IO.inspect(label: :after_sort)
+      |> Enum.map(fn coords_tile ->
+        Enum.reduce(coords_tile, [], &group_x_by_y/2)
+      end)
+      |> IO.inspect(label: :after_group)
       # Отбрасываем [0, 0]
       |> Enum.filter(&([0, 0] != &1))
+      |> IO.inspect(label: :after_zero)
 
     [coords_tile_groupped | group_coord_by_row(coords_with_tile, sorted_tile + 1)]
   end
@@ -144,15 +174,6 @@ defmodule Context.Tile.Max7219 do
       end
       |> transform_to_spi()
     end
-  end
-
-  def __coord__(coords) do
-    coords
-    |> translate_coord_to_max7219
-    |> group_coord_by_row
-    |> __matrix_coords__
-    |> transpose()
-    |> Enum.map(&transform_to_spi/1)
   end
 
   # Example max7219_matrix_coords [x, y] - [
@@ -184,12 +205,6 @@ defmodule Context.Tile.Max7219 do
     |> Enum.into(<<>>, &<<&1>>)
   end
 
-  defp transpose(rows) do
-    rows
-    |> List.zip()
-    |> Enum.map(&Tuple.to_list/1)
-  end
-
   # ВАЖНО: coord [y, x] координаты на отдельном tile
   defp group_x_by_y(coord, []), do: [coord]
 
@@ -206,10 +221,10 @@ defmodule Context.Tile.Max7219 do
     end
   end
 
-  defp translate_coord_to_max7219(coords) do
-    coords
-    |> Enum.map( fn coord ->
+  defp translate_coord_to_max7219([]), do: [[@y_default, @x_default]]
 
-    end)
+  defp translate_coord_to_max7219(coords_tile) do
+    coords_tile
+    |> Enum.map(fn [y, x] -> [Enum.at(@y, y), Enum.at(@x, x)] end)
   end
 end

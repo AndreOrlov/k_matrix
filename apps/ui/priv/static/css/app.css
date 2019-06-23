@@ -1,0 +1,16 @@
+/* This file is for your main application css. */
+
+@import "./phoenix.css";
+
+table.matrix-29x29 {
+    width: 280px;
+}
+
+.matrix-29x29 tr {
+    height: 10px;
+}
+
+.matrix-29x29 td {
+    padding: 0 0;
+    width: 5px;
+}

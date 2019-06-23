@@ -10,7 +10,7 @@ defmodule Ui.Application do
     children = [
       # Start the endpoint when the application starts
       UiWeb.Endpoint,
-      {Task.Supervisor, name: Ui.TaskSupervisor}
+      Context.Matrix
       # Starts a worker by calling: Ui.Worker.start_link(arg)
       # {Ui.Worker, arg},
     ]

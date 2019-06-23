@@ -7,9 +7,7 @@ defmodule Context.Tile.Max7219 do
   # matrix in tiles
   @matrix_widht Application.get_env(:matrix, :dimensions)[:weight]
   @matrix_height Application.get_env(:matrix, :dimensions)[:height]
-  @qty_tiles @matrix_widht * @matrix_height
 
-  # TODO: DYI
   # WARNING: команды для микросхемы MAX7219
   # ref datasheet: https://datasheets.maximintegrated.com/en/ds/MAX7219-MAX7221.pdf
   @x [
@@ -111,11 +109,8 @@ defmodule Context.Tile.Max7219 do
   def __coord__(coords) do
     coords
     |> Enum.map(&translate_coord_to_max7219/1)
-    |> IO.inspect(label: :AFTER_TRANSLATE)
     |> group_coord_by_row
-    |> IO.inspect(label: :AFTER_GROUP_ROW)
     |> __matrix_coords__
-    |> IO.inspect(label: :AFTER_MATRIX_COORDS)
     |> transpose
     |> Enum.map(&transform_to_spi/1)
   end
@@ -128,29 +123,13 @@ defmodule Context.Tile.Max7219 do
   #   [], # [y, x] tile T2
   #   [] # [y, x] tile T3
   # ]
-  def group_coord_by_row(coords_with_tile, sorted_tile \\ 0)
-  def group_coord_by_row(_coords_with_tile, @qty_tiles), do: []
-
-  def group_coord_by_row(coords_with_tile, sorted_tile) do # TODO sorted_tile remove?
-    IO.inspect(sorted_tile, label: :sorted_tile)
-
-    coords_tile_groupped =
-      coords_with_tile
-      |> IO.inspect(label: :coords_with_tile)
-      # |> Enum.map(&Enum.at(&1, sorted_tile))
-      |> IO.inspect(label: :before_sort)
-      |> Enum.map(&Enum.sort/1)
-      |> IO.inspect(label: :after_sort)
-      # Группируем по y в tile
-      |> Enum.map(fn coords_tile ->
-        Enum.reduce(coords_tile, [], &group_x_by_y/2)
-      end)
-      |> IO.inspect(label: :after_group)
-      # Отбрасываем [0, 0]
-      # |> Enum.filter(&([0, 0] != &1))
-      |> IO.inspect(label: :after_zero)
-
-    # [coords_tile_groupped | group_coord_by_row(coords_with_tile, sorted_tile + 1)]
+  def group_coord_by_row(coords_with_tile) do
+    coords_with_tile
+    |> Enum.map(&Enum.sort/1)
+    # Группируем по y в tile
+    |> Enum.map(fn coords_tile ->
+      Enum.reduce(coords_tile, [], &group_x_by_y/2)
+    end)
   end
 
   # ДСП
@@ -174,10 +153,10 @@ defmodule Context.Tile.Max7219 do
   end
 
   # Example max7219_matrix_coords [x, y] - [
-  #   [[1, 2], [3, 1]], # leds on to 0 tile
-  #   [[1, 2]], # leds on to 1 tile
-  #   [], # leds on to 2 tile (nothing on)
-  #   [[4, 3]] # leds on to 2 tile
+  #   [[1, 2], [3, 1]], # leds on to tile T0
+  #   [[1, 2]], # leds on to tile T1
+  #   [], # (nothing on) on tile T2
+  #   [[4, 3]] # leds on to tile T3
   # ]
   def __matrix_coords__(max7219_matrix_coords) do
     max_length =
@@ -229,8 +208,6 @@ defmodule Context.Tile.Max7219 do
   defp transpose(rows) do
     rows
     |> List.zip()
-    |> IO.inspect(label: :AFTER_ZIP)
     |> Enum.map(&Tuple.to_list/1)
-    |> IO.inspect(label: :AFTER_TO_LIST)
   end
 end

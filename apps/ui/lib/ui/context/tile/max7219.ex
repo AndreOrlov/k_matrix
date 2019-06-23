@@ -1,6 +1,8 @@
 defmodule Context.Tile.Max7219 do
   use Bitwise
 
+  @spi if Mix.env() != :prod, do: Context.Tile.Helpers, else: Circuits.SPI
+
   # dimensions tile. Tile - отдельная микросхема MAX7219 с матрицей диодов 8 х 8
   @rows Application.get_env(:matrix, :dimensions)[:tile_rows]
 
@@ -48,61 +50,61 @@ defmodule Context.Tile.Max7219 do
   @tile_no_decode_mode [0x09, 0x00]
 
   def open do
-    {:ok, ref} = Circuits.SPI.open("spidev0.0")
+    {:ok, ref} = @spi.open("spidev0.0")
 
     {:ok, ref}
   end
 
   def shutdown(ref) do
-    {:ok, _} = Circuits.SPI.transfer(ref, __command__(@tile_shutdown))
+    {:ok, _} = @spi.transfer(ref, __command__(@tile_shutdown))
 
     :ok
   end
 
   def lights_off(ref) do
-    Enum.each(__lights_off__(), &({:ok, _} = Circuits.SPI.transfer(ref, &1)))
+    Enum.map(__lights_off__(), &({:ok, _} = @spi.transfer(ref, &1)))
 
     :ok
   end
 
   def test_on(ref) do
-    {:ok, _} = Circuits.SPI.transfer(ref, __command__(@tile_test_on))
+    {:ok, _} = @spi.transfer(ref, __command__(@tile_test_on))
 
     :ok
   end
 
   def test_off(ref) do
-    {:ok, _} = Circuits.SPI.transfer(ref, __command__(@tile_test_off))
+    {:ok, _} = @spi.transfer(ref, __command__(@tile_test_off))
 
     :ok
   end
 
   def activate_rows(ref) do
-    {:ok, _} = Circuits.SPI.transfer(ref, __command__(@tile_active_rows))
+    {:ok, _} = @spi.transfer(ref, __command__(@tile_active_rows))
 
     :ok
   end
 
   def disable_code(ref) do
-    {:ok, _} = Circuits.SPI.transfer(ref, __command__(@tile_no_decode_mode))
+    {:ok, _} = @spi.transfer(ref, __command__(@tile_no_decode_mode))
 
     :ok
   end
 
   def resume(ref) do
-    {:ok, _} = Circuits.SPI.transfer(ref, __command__(@tile_resume))
+    {:ok, _} = @spi.transfer(ref, __command__(@tile_resume))
 
     :ok
   end
 
   def lights_on_by_coords(ref, coords) do
-    Enum.each(__coord__(coords), &({:ok, _} = Circuits.SPI.transfer(ref, &1)))
+    Enum.each(__coord__(coords), &({:ok, _} = @spi.transfer(ref, &1)))
 
     :ok
   end
 
   def close(ref) do
-    :ok = Circuits.SPI.close(ref)
+    :ok = @spi.close(ref)
   end
 
   # TODO: rename as regular function

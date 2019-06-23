@@ -26,8 +26,7 @@ defmodule Context.Tile.Max7219Test do
     assert res == Context.Tile.Max7219.__coord__(coords)
   end
 
-  # TODO: сделать заглушку для Circuits.SPI.transfer(ref, _)
-  @tag :skip
+  # @tag :skip
   test "tile light off" do
     res = [
       <<1, 0, 1, 0, 1, 0, 1, 0>>,
@@ -40,7 +39,7 @@ defmodule Context.Tile.Max7219Test do
       <<8, 0, 8, 0, 8, 0, 8, 0>>
     ]
 
-    assert res == Context.Tile.Max7219.lights_off()
+    assert res == Context.Tile.Max7219.__lights_off__()
   end
 
   # @tag :skip

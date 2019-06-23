@@ -1,4 +1,4 @@
-defmodule Context.Tile.Max7219Test do
+defmodule Context.TileTest do
   @moduledoc """
     Тесты для 4х tiles. Tile - 8 x 8 точек (диодов)
     Расположение tiles in matrix

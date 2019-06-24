@@ -22,16 +22,6 @@
 <a href="matrix">Upload file</a>
   </article>
   <article class="column">
-    <div>
-    <table class="matrix-29x29" border="1">
-      <%= for i <- 0..28 do %>
-        <tr>
-        <%= for j <- 0..28 do %>
-          <td <%= if rem(j, 2) == 0 and rem(i, 2) == 0, do: "bgcolor=red"%>></td>
-        <% end %>
-        </tr>
-      <% end %>
-    </table>
-  </div> 
+    <%= render("image.html", aaa: "aaa")%>
   </article>
 </section>

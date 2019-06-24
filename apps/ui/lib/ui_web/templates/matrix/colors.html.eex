@@ -1,6 +1,8 @@
+<section class="row">
+  <article class="column">
 <form action="colors" method="post">
   <input type="hidden" value="<%= @token %>" name="_csrf_token"/>
-  <input type="hidden" value="<%= to_json(@matrix) %>" name="matrix"/>
+  <input type="hidden" value="<%= to_json(@matrix) %>" name="matrix"/> 
   <p>Select color</p>
   <div>
     <%= for {color, coords} <- @matrix do %>
@@ -18,3 +20,10 @@
   </div>
 </form> 
 <a href="matrix">Upload file</a>
+  </article>
+  <article class="column">
+    <%= if @coords do %>
+      <%= render("image.html", coords: @coords)%>
+    <% end %>
+  </article>
+</section>

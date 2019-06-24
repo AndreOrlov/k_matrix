@@ -13,10 +13,27 @@ defmodule UiWeb.MatrixView do
     Jason.encode!(data)
   end
 
-  def render("image.html", opts) do
+  def render("image.html", %{coords: coords}) do
+    # TODO: вынести в виде структуры аттрибута модуля этого
     matrix_cols = @matrix_width * @cols
     matrix_rows = @matrix_height * @rows
+    quad_size = 10
+    borders_width = 2
 
-    render_template("image.html", cols: matrix_cols, rows: matrix_rows)
+    table_width = matrix_cols * quad_size + borders_width
+    table_height = matrix_rows * quad_size + borders_width
+
+    render_template(
+      "image.html",
+      table_width: table_width,
+      table_height: table_height,
+      cols: matrix_cols,
+      rows: matrix_rows,
+      coords: coords
+    )
+  end
+
+  def has_coords(coords, %{x: x, y: y} = c) do
+    Enum.find_value(coords, &(&1 == [x, y]))
   end
 end

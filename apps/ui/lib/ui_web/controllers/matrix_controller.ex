@@ -12,7 +12,8 @@ defmodule UiWeb.MatrixController do
       render(conn, "colors.html",
         token: get_csrf_token(),
         matrix: matrix,
-        choiced: key_from_value(coords, matrix)
+        choiced: key_from_value(coords, matrix),
+        coords: coords
       )
     else
       {:error, _} ->
@@ -31,7 +32,8 @@ defmodule UiWeb.MatrixController do
       render(conn, "colors.html",
         token: get_csrf_token(),
         matrix: matrix,
-        choiced: key_first_element(matrix)
+        choiced: key_first_element(matrix),
+        coords: nil
       )
     else
       {:error, :empty} ->

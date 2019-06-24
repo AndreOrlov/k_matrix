@@ -22,6 +22,8 @@
 <a href="matrix">Upload file</a>
   </article>
   <article class="column">
-    <%= render("image.html", aaa: "aaa")%>
+    <%= if @coords do %>
+      <%= render("image.html", coords: @coords)%>
+    <% end %>
   </article>
 </section>

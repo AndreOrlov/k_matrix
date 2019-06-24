@@ -33,7 +33,7 @@ defmodule UiWeb.MatrixView do
     )
   end
 
-  def has_coords(coords, %{x: x, y: y} = c) do
+  def has_coords(coords, %{x: x, y: y}) do
     Enum.find_value(coords, &(&1 == [x, y]))
   end
 end

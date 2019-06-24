@@ -1,10 +1,10 @@
 <div>
-    <table class="matrix-29x29" border="1">
-        <%= for i <- 0..28 do %>
+    <table border="1" style="width:<%= @cols * 10 + 2%>px;height:<%= @rows * 10 + 2%>px">
+        <%= for i <- 0..@rows - 1 do %>    
         <tr>
-        <%= for j <- 0..28 do %>
-            <td <%= if rem(j, 2) == 0 and rem(i, 2) == 0, do: "bgcolor=red"%>></td>
-        <% end %>
+            <%= for j <- 0..@cols - 1 do %>
+                <td style="padding: 0 0;width:<%= 10%>px" <%= if rem(j, 2) == 0 and rem(i, 2) == 0, do: "bgcolor=red"%>></td>
+            <% end %>
         </tr>
         <% end %>
     </table>

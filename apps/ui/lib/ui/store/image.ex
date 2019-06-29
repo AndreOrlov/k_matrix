@@ -21,7 +21,15 @@ defmodule Store.Image do
 
   # ДСП
 
-  def __leading_row__(row, limit, value \\ "none") when length(row) < limit do
+  def __leading_rows__([], limit), do: []
+
+  def __leading_rows__([head | rows], limit) do
+    [__leading_row__(head, limit) | __leading_rows__(rows, limit)]
+  end
+
+  def __leading_row__(row, limit, value \\ "none")
+
+  def __leading_row__(row, limit, value) when length(row) < limit do
     qty = limit - length(row)
     row ++ List.duplicate(value, qty)
   end

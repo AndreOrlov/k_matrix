@@ -6,6 +6,23 @@ defmodule Store.ImageTest do
   end
 
   # @tag :skip
+  test "leading rows image" do
+    limit = 5
+
+    rows = [
+      ["A01", "B01", "A01"],
+      ["A01", "B01", "A01"]
+    ]
+
+    res = [
+      ["A01", "B01", "A01", "none", "none"],
+      ["A01", "B01", "A01", "none", "none"]
+    ]
+
+    assert res == Store.Image.__leading_rows__(rows, limit)
+  end
+
+  # @tag :skip
   test "leading row image" do
     limit = 5
     row = ["A01", "B01", "A01"]

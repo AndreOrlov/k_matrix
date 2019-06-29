@@ -21,7 +21,7 @@ defmodule Store.Image do
 
   # ДСП
 
-  def __leading_rows__([], limit), do: []
+  def __leading_rows__([], _limit), do: []
 
   def __leading_rows__([head | rows], limit) do
     [__leading_row__(head, limit) | __leading_rows__(rows, limit)]
@@ -37,7 +37,7 @@ defmodule Store.Image do
   # Server
 
   @impl GenServer
-  def handle_cast({:put_image_coords, coords}, state) do
+  def handle_cast({:put_image_coords, _coords}, state) do
     {:noreply, state}
   end
 end

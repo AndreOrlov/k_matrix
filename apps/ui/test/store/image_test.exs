@@ -11,12 +11,12 @@ defmodule Store.ImageTest do
 
     rows = [
       ["A01", "B01", "A01"],
-      ["A01", "B01", "A01"]
+      ["A02", "B02", "A02"]
     ]
 
     res = [
       ["A01", "B01", "A01", "none", "none"],
-      ["A01", "B01", "A01", "none", "none"]
+      ["A02", "B02", "A02", "none", "none"]
     ]
 
     assert res == Store.Image.__leading_rows__(rows, limit)

@@ -2,7 +2,51 @@ defmodule Store.ImageTest do
   use ExUnit.Case
 
   @tag :skip
-  test "build matrix image" do
+  test "check multiplicity tiles" do
+  end
+
+  # @tag: skip
+  test "build empty canvas" do
+    # {qty_cols, qty_rows}
+    tile_dimensions = {2, 1}
+
+    coords = %{
+      "A01" => [[1, 1], [2, 1]],
+      "B01" => [[1, 2], [3, 3]]
+    }
+
+    res = [
+      ["none", "none", "none", "none"],
+      ["none", "none", "none", "none"],
+      ["none", "none", "none", "none"]
+    ]
+
+    assert res == Store.Image.build_canvas(coords, tile_dimensions, "none")
+  end
+
+  # @tad :skip
+  test "split by matrix" do
+    # {qty_cols, qty_rows}
+    tile_dimensions = {2, 1}
+
+    canvas = [
+      ["none", "none", "none", "none"],
+      ["none", "none", "none", "none"],
+      ["none", "none", "none", "none"]
+    ]
+
+    coords = [
+      {"A01", [[1, 1], [2, 1]]},
+      {"B01", [[1, 2], [3, 3]]}
+    ]
+
+    res = [
+      ["A01", "A01", "none", "none"],
+      ["none", "B01", "none", "none"],
+      ["none", "none", "B01", "none"]
+    ]
+
+    assert res == Store.Image.__split_by_matrix__(canvas, coords, tile_dimensions)
   end
 
   # @tag :skip

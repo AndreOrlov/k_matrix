@@ -46,6 +46,6 @@ defmodule Context.Tile do
     end)
   end
 
-  defp div_rem(dividend, divisor),
+  def div_rem(dividend, divisor),
     do: {:div, div(dividend, divisor), :rem, rem(dividend, divisor)}
 end

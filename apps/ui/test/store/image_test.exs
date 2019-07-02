@@ -5,7 +5,7 @@ defmodule Store.ImageTest do
   test "check multiplicity tiles" do
   end
 
-  @tag :skip
+  # @tag :skip
   test "#put_image_coords" do
     # {qty_cols, qty_rows}
     matrix_dimensions = {2, 1}
@@ -18,10 +18,11 @@ defmodule Store.ImageTest do
 
     res = [
       ["A01", "A01", "none", "none"],
-      ["B01", "none", "none", "none"],
+      ["B01", "none", "A01", "none"],
       ["none", "none", "B01", "none"]
     ]
 
+    # TODO: промежуточный итог, надо дописывать еще
     assert {:ok, res} == Store.Image.put_image_coords(coords, matrix_dimensions)
   end
 

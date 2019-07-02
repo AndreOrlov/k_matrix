@@ -5,17 +5,39 @@ defmodule Store.ImageTest do
   test "check multiplicity tiles" do
   end
 
-  # @tag: skip
+  @tag :skip
+  test "#put_image_coords" do
+    # {qty_cols, qty_rows}
+    matrix_dimensions = {2, 1}
+
+    # [y, x] coords, 0 based index
+    coords = %{
+      "A01" => [[0, 0], [0, 1], [1, 2]],
+      "B01" => [[1, 0], [2, 2]]
+    }
+
+    res = [
+      ["A01", "A01", "none", "none"],
+      ["B01", "none", "none", "none"],
+      ["none", "none", "B01", "none"]
+    ]
+
+    assert {:ok, res} == Store.Image.put_image_coords(coords, matrix_dimensions)
+  end
+
+  # @tag :skip
   test "build empty canvas" do
     # {qty_cols, qty_rows}
     tile_dimensions = {2, 1}
 
     coords = %{
-      "A01" => [[1, 1], [2, 1]],
-      "B01" => [[1, 2], [3, 3]]
+      "A01" => [[0, 0], [1, 0]],
+      "B01" => [[0, 1], [3, 3]]
     }
 
+    # [y, x] coords, 0 based index
     res = [
+      ["none", "none", "none", "none"],
       ["none", "none", "none", "none"],
       ["none", "none", "none", "none"],
       ["none", "none", "none", "none"]
@@ -24,7 +46,7 @@ defmodule Store.ImageTest do
     assert res == Store.Image.build_canvas(coords, tile_dimensions, "none")
   end
 
-  # @tag: skip
+  # @tag :skip
   test "draw image on canvas" do
     canvas = [
       ["none", "none", "none", "none"],

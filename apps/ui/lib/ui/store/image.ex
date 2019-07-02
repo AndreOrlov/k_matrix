@@ -17,8 +17,8 @@ defmodule Store.Image do
   # Client API
 
   # Загрузить координаты всей картинки
-  def put_image_coords(coords) do
-    GenServer.cast(__MODULE__, {:put_image_coords, coords})
+  def put_image_coords(coords, matrix_dimensions) do
+    GenServer.call(__MODULE__, {:put_image_coords, coords, matrix_dimensions})
   end
 
   # ДСП
@@ -28,8 +28,9 @@ defmodule Store.Image do
   def build_canvas(coords, {qty_cols, qty_rows}, default_value) do
     {x_max, y_max} = max_value_axis(coords)
 
-    width = measure(x_max, qty_cols)
-    height = measure(y_max, qty_rows)
+    # 0 based ingex coords
+    width = measure(x_max + 1, qty_cols)
+    height = measure(y_max + 1, qty_rows)
 
     default_value
     |> List.duplicate(width)
@@ -114,7 +115,11 @@ defmodule Store.Image do
   # Server
 
   @impl GenServer
-  def handle_cast({:put_image_coords, _coords}, state) do
-    {:noreply, state}
+  def handle_call({:put_image_coords, coords, matrix_dimensions}, _from, state) do
+    res =
+      build_canvas(coords, matrix_dimensions)
+      |> draw_image(coords)
+
+    {:reply, {:ok, res}, state}
   end
 end

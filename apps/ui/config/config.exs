@@ -15,7 +15,9 @@ config :ui, UiWeb.Endpoint,
   pubsub: [name: Ui.PubSub, adapter: Phoenix.PubSub.PG2]
 
 config :matrix, :dimensions,
+  # TODO: rad удалить позже, будет динамическим параметр
   height: 2,
+  # TODO: rad удалить позже, будет динамическим параметр
   weight: 2,
   tile_rows: 8,
   tile_cols: 8

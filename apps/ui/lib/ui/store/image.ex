@@ -37,20 +37,21 @@ defmodule Store.Image do
   end
 
   def draw_image(canvas, coords) do
-    picture = canvas
+    {:ok, pid} = Agent.start_link(fn -> canvas end)
 
     coords
     |> Map.keys()
     |> Enum.each(fn color ->
       coords[color]
-      |> Enum.each(fn [x, y] ->
-        picture =
-          List.insert_at(picture, y - 1, List.insert_at(Enum.at(picture, y - 1), x - 1, color))
-          |> IO.inspect(label: :PICTURE)
-
-        # picture = List.replace_at(Enum.at(picture, y - 1), x - 1, color) |> IO.inspect(label: :PICTURE)
+      |> Enum.each(fn [y, x] ->
+        cur_canvas = Agent.get(pid, & &1)
+        updated_canvas = update_canvas(cur_canvas, [y, x], color)
+        Agent.update(pid, fn _ -> updated_canvas end)
       end)
     end)
+
+    picture = Agent.get(pid, & &1)
+    :ok = Agent.stop(pid)
 
     picture
   end
@@ -60,7 +61,7 @@ defmodule Store.Image do
 
   def __split_by_matrix(coords, {cols, rows}) do
     for y <- 0..(rows - 1), x <- 0..(cols - 1) do
-      # TODO: later
+      # TODO: later rad?
     end
   end
 
@@ -75,6 +76,16 @@ defmodule Store.Image do
   def __leading_row__(row, limit, value) when length(row) < limit do
     qty = limit - length(row)
     row ++ List.duplicate(value, qty)
+  end
+
+  defp update_canvas(canvas, [x] = axis, value) when length(axis) == 1 do
+    List.update_at(canvas, x, fn _ -> value end)
+  end
+
+  defp update_canvas(canvas, [y | tail] = coord, value) do
+    List.update_at(canvas, y, fn _ ->
+      update_canvas(Enum.at(canvas, y), tail, value)
+    end)
   end
 
   defp max_value_axis(coords) do

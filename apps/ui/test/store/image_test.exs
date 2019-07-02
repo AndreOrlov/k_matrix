@@ -32,9 +32,10 @@ defmodule Store.ImageTest do
       ["none", "none", "none", "none"]
     ]
 
+    # [y, x] coords, 0 based index
     coords = %{
-      "A01" => [[1, 1], [2, 1]],
-      "B01" => [[1, 2], [3, 3]]
+      "A01" => [[0, 0], [0, 1]],
+      "B01" => [[1, 0], [2, 2]]
     }
 
     res = [

@@ -36,6 +36,25 @@ defmodule Store.Image do
     |> List.duplicate(height)
   end
 
+  def draw_image(canvas, coords) do
+    picture = canvas
+
+    coords
+    |> Map.keys()
+    |> Enum.each(fn color ->
+      coords[color]
+      |> Enum.each(fn [x, y] ->
+        picture =
+          List.insert_at(picture, y - 1, List.insert_at(Enum.at(picture, y - 1), x - 1, color))
+          |> IO.inspect(label: :PICTURE)
+
+        # picture = List.replace_at(Enum.at(picture, y - 1), x - 1, color) |> IO.inspect(label: :PICTURE)
+      end)
+    end)
+
+    picture
+  end
+
   # TODO: см. формат в тестах
   def __split_by_matrix(coords, matrix_dims \\ {2, 1})
 

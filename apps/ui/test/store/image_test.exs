@@ -24,7 +24,29 @@ defmodule Store.ImageTest do
     assert res == Store.Image.build_canvas(coords, tile_dimensions, "none")
   end
 
-  # @tad :skip
+  # @tag: skip
+  test "draw image on canvas" do
+    canvas = [
+      ["none", "none", "none", "none"],
+      ["none", "none", "none", "none"],
+      ["none", "none", "none", "none"]
+    ]
+
+    coords = %{
+      "A01" => [[1, 1], [2, 1]],
+      "B01" => [[1, 2], [3, 3]]
+    }
+
+    res = [
+      ["A01", "A01", "none", "none"],
+      ["B01", "none", "none", "none"],
+      ["none", "none", "B01", "none"]
+    ]
+
+    assert res == Store.Image.draw_image(canvas, coords)
+  end
+
+  @tag :skip
   test "split by matrix" do
     # {qty_cols, qty_rows}
     tile_dimensions = {2, 1}

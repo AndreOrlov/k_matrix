@@ -24,11 +24,13 @@ defmodule Context.Tile do
   # На выходе [[[y1, x1], ..., [yi, xi]], ..., [n_tiles]] - координаты во всей матрице,
   #   разбитые по tiles, с началом координат [0, 0],
   #   координаты поменяны местами [y, x]
-  def coord_by_tiles(x, y) when is_valid_coord(x, y) do
+  def coord_by_tiles(x, y, height \\ @matrix_height, width \\ @matrix_width)
+
+  def coord_by_tiles(x, y, height, width) when is_valid_coord(x, y) do
     {:div, x_div, :rem, x_rem} = div_rem(x - 1, @cols)
     {:div, y_div, :rem, y_rem} = div_rem(y - 1, @rows)
 
-    for y_tile <- 0..(@matrix_height - 1), x_tile <- 0..(@matrix_width - 1) do
+    for y_tile <- 0..(height - 1), x_tile <- 0..(width - 1) do
       case {y_tile, x_tile} do
         {^y_div, ^x_div} -> [y_rem, x_rem]
         _ -> nil

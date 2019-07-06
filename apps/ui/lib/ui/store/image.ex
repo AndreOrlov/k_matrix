@@ -133,6 +133,8 @@ defmodule Store.Image do
       |> __draw_image__(coords)
       |> __split_by_matrix__(matrix_dimensions)
 
-    {:reply, {:ok, picture}, picture}
+    new_state = Map.put(state, :picture, picture)
+
+    {:reply, {:ok, picture}, new_state}
   end
 end

@@ -5,7 +5,7 @@ defmodule Store.Image do
 
   use GenServer
 
-  def start_link(state \\ {}) do
+  def start_link(state \\ %{}) do
     GenServer.start_link(__MODULE__, state, name: __MODULE__)
   end
 
@@ -23,9 +23,9 @@ defmodule Store.Image do
 
   # ДСП
 
-  def build_canvas(coords, matrix_dimensions, default_value \\ "none")
+  def __build_canvas__(coords, matrix_dimensions, default_value \\ "none")
 
-  def build_canvas(coords, {qty_cols, qty_rows}, default_value) do
+  def __build_canvas__(coords, {qty_cols, qty_rows}, default_value) do
     {x_max, y_max} = max_value_axis(coords)
 
     # 0 based ingex coords
@@ -37,7 +37,7 @@ defmodule Store.Image do
     |> List.duplicate(height)
   end
 
-  def draw_image(canvas, coords) do
+  def __draw_image__(canvas, coords) do
     {:ok, pid} = Agent.start_link(fn -> canvas end)
 
     coords
@@ -57,12 +57,17 @@ defmodule Store.Image do
     picture
   end
 
-  def __split_by_matrix__(picture, {qty_cols, qty_rows} = dimensions_matrix) do
+  def __split_by_matrix__(picture, dimensions_matrix) do
     width = length(Enum.at(picture, 0))
     height = length(picture)
 
     for y <- 0..(height - 1), x <- 0..(width - 1) do
-      color = Enum.at(Enum.at(picture, y), x)
+      color =
+        Enum.at(
+          Enum.at(picture, y),
+          x
+        )
+
       coords_to_matrix(y, x, color, dimensions_matrix)
     end
     |> Enum.reduce(%{}, fn map, acc ->
@@ -70,7 +75,9 @@ defmodule Store.Image do
     end)
   end
 
-  def coords_to_matrix(y, x, color, {qty_cols, qty_rows}) do
+  # private
+
+  defp coords_to_matrix(y, x, color, {qty_cols, qty_rows}) do
     {:div, y_matrix, :rem, y_in_matrix} = Tile.div_rem(y, qty_rows)
     {:div, x_matrix, :rem, x_in_matrix} = Tile.div_rem(x, qty_cols)
 
@@ -78,9 +85,9 @@ defmodule Store.Image do
     convert_to_map(coords_color)
   end
 
-  def convert_to_map([color | []]), do: color
+  defp convert_to_map([color | []]), do: color
 
-  def convert_to_map([axis | coords_color], map \\ %{}) do
+  defp convert_to_map([axis | coords_color], map \\ %{}) do
     Map.put(map, axis, convert_to_map(coords_color))
   end
 
@@ -88,7 +95,7 @@ defmodule Store.Image do
     List.update_at(canvas, x, fn _ -> value end)
   end
 
-  defp update_canvas(canvas, [y | tail] = coord, value) do
+  defp update_canvas(canvas, [y | tail], value) do
     List.update_at(canvas, y, fn _ ->
       update_canvas(Enum.at(canvas, y), tail, value)
     end)
@@ -121,10 +128,11 @@ defmodule Store.Image do
 
   @impl GenServer
   def handle_call({:put_image_coords, coords, matrix_dimensions}, _from, state) do
-    res =
-      build_canvas(coords, matrix_dimensions)
-      |> draw_image(coords)
+    picture =
+      __build_canvas__(coords, matrix_dimensions)
+      |> __draw_image__(coords)
+      |> __split_by_matrix__(matrix_dimensions)
 
-    {:reply, {:ok, res}, state}
+    {:reply, {:ok, picture}, picture}
   end
 end

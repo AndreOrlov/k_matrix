@@ -12,13 +12,22 @@ defmodule Store.ImageTest do
       "B01" => [[1, 0], [2, 2]]
     }
 
-    res = [
-      ["A01", "A01", "none", "none"],
-      ["B01", "none", "A01", "none"],
-      ["none", "none", "B01", "none"]
-    ]
+    # одна точка в матрице - %{y_matrix => %{y_matrix => %{y_in_matrix => %{x_in_matrix => color}}}}
+    res = %{
+      0 => %{
+        0 => %{0 => %{0 => "A01", 1 => "A01"}},
+        1 => %{0 => %{0 => "none", 1 => "none"}}
+      },
+      1 => %{
+        0 => %{0 => %{0 => "B01", 1 => "none"}},
+        1 => %{0 => %{0 => "A01", 1 => "none"}}
+      },
+      2 => %{
+        0 => %{0 => %{0 => "none", 1 => "none"}},
+        1 => %{0 => %{0 => "B01", 1 => "none"}}
+      }
+    }
 
-    # TODO: промежуточный итог, надо дописывать еще
     assert {:ok, res} == Store.Image.put_image_coords(coords, matrix_dimensions)
   end
 
@@ -40,7 +49,7 @@ defmodule Store.ImageTest do
       ["none", "none", "none", "none"]
     ]
 
-    assert res == Store.Image.build_canvas(coords, matrix_dimensions, "none")
+    assert res == Store.Image.__build_canvas__(coords, matrix_dimensions, "none")
   end
 
   # @tag :skip
@@ -63,7 +72,7 @@ defmodule Store.ImageTest do
       ["none", "none", "B01", "none"]
     ]
 
-    assert res == Store.Image.draw_image(canvas, coords)
+    assert res == Store.Image.__draw_image__(canvas, coords)
   end
 
   # @tag :skip

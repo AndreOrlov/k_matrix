@@ -1,10 +1,6 @@
 defmodule Store.ImageTest do
   use ExUnit.Case
 
-  @tag :skip
-  test "check multiplicity tiles" do
-  end
-
   # @tag :skip
   test "#put_image_coords" do
     # {qty_cols, qty_rows}
@@ -29,7 +25,7 @@ defmodule Store.ImageTest do
   # @tag :skip
   test "build empty canvas" do
     # {qty_cols, qty_rows}
-    tile_dimensions = {2, 1}
+    matrix_dimensions = {2, 1}
 
     coords = %{
       "A01" => [[0, 0], [1, 0]],
@@ -44,7 +40,7 @@ defmodule Store.ImageTest do
       ["none", "none", "none", "none"]
     ]
 
-    assert res == Store.Image.build_canvas(coords, tile_dimensions, "none")
+    assert res == Store.Image.build_canvas(coords, matrix_dimensions, "none")
   end
 
   # @tag :skip
@@ -70,58 +66,49 @@ defmodule Store.ImageTest do
     assert res == Store.Image.draw_image(canvas, coords)
   end
 
-  @tag :skip
+  # @tag :skip
   test "split by matrix" do
     # {qty_cols, qty_rows}
-    tile_dimensions = {2, 1}
+    matrix_dimensions = {2, 3}
 
-    canvas = [
-      ["none", "none", "none", "none"],
-      ["none", "none", "none", "none"],
-      ["none", "none", "none", "none"]
+    # image on canvas
+    picture = [
+      ["A00", "A01", "none", "none"],
+      ["B00", "none", "B02", "none"],
+      ["none", "none", "C02", "none"],
+      ["none", "D01", "none", "none"],
+      ["none", "none", "E02", "none"],
+      ["none", "none", "none", "F03"]
     ]
 
-    coords = [
-      {"A01", [[1, 1], [2, 1]]},
-      {"B01", [[1, 2], [3, 3]]}
-    ]
+    # одна точка в матрице - %{y_matrix => %{y_matrix => %{y_in_matrix => %{x_in_matrix => color}}}}
+    matriсes = %{
+      0 => %{
+        0 => %{
+          0 => %{0 => "A00", 1 => "A01"},
+          1 => %{0 => "B00", 1 => "none"},
+          2 => %{0 => "none", 1 => "none"}
+        },
+        1 => %{
+          0 => %{0 => "none", 1 => "none"},
+          1 => %{0 => "B02", 1 => "none"},
+          2 => %{0 => "C02", 1 => "none"}
+        }
+      },
+      1 => %{
+        0 => %{
+          0 => %{0 => "none", 1 => "D01"},
+          1 => %{0 => "none", 1 => "none"},
+          2 => %{0 => "none", 1 => "none"}
+        },
+        1 => %{
+          0 => %{0 => "none", 1 => "none"},
+          1 => %{0 => "E02", 1 => "none"},
+          2 => %{0 => "none", 1 => "F03"}
+        }
+      }
+    }
 
-    res = [
-      ["A01", "A01", "none", "none"],
-      ["none", "B01", "none", "none"],
-      ["none", "none", "B01", "none"]
-    ]
-
-    assert res == Store.Image.__split_by_matrix__(canvas, coords, tile_dimensions)
-  end
-
-  # @tag :skip
-  test "leading rows image" do
-    limit = 5
-
-    rows = [
-      ["A01", "B01", "A01"],
-      ["A02", "B02", "A02"]
-    ]
-
-    res = [
-      ["A01", "B01", "A01", "none", "none"],
-      ["A02", "B02", "A02", "none", "none"]
-    ]
-
-    assert res == Store.Image.__leading_rows__(rows, limit)
-  end
-
-  # @tag :skip
-  test "leading row image" do
-    limit = 5
-    row = ["A01", "B01", "A01"]
-    res = ["A01", "B01", "A01", "none", "none"]
-
-    assert res == Store.Image.__leading_row__(row, limit)
-  end
-
-  @tag :skip
-  test "matrix tiles build correct" do
+    assert matriсes == Store.Image.__split_by_matrix__(picture, matrix_dimensions)
   end
 end

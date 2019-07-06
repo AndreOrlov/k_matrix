@@ -57,26 +57,31 @@ defmodule Store.Image do
     picture
   end
 
-  # TODO: см. формат в тестах
-  def __split_by_matrix(coords, matrix_dims \\ {2, 1})
+  def __split_by_matrix__(picture, {qty_cols, qty_rows} = dimensions_matrix) do
+    width = length(Enum.at(picture, 0))
+    height = length(picture)
 
-  def __split_by_matrix(coords, {cols, rows}) do
-    for y <- 0..(rows - 1), x <- 0..(cols - 1) do
-      # TODO: later rad?
+    for y <- 0..(height - 1), x <- 0..(width - 1) do
+      color = Enum.at(Enum.at(picture, y), x)
+      coords_to_matrix(y, x, color, dimensions_matrix)
     end
+    |> Enum.reduce(%{}, fn map, acc ->
+      Tile.Helpers.Map.deep_merge(acc, map)
+    end)
   end
 
-  def __leading_rows__([], _limit), do: []
+  def coords_to_matrix(y, x, color, {qty_cols, qty_rows}) do
+    {:div, y_matrix, :rem, y_in_matrix} = Tile.div_rem(y, qty_rows)
+    {:div, x_matrix, :rem, x_in_matrix} = Tile.div_rem(x, qty_cols)
 
-  def __leading_rows__([head | rows], limit) do
-    [__leading_row__(head, limit) | __leading_rows__(rows, limit)]
+    coords_color = [y_matrix, x_matrix, y_in_matrix, x_in_matrix, color]
+    convert_to_map(coords_color)
   end
 
-  def __leading_row__(row, limit, value \\ "none")
+  def convert_to_map([color | []]), do: color
 
-  def __leading_row__(row, limit, value) when length(row) < limit do
-    qty = limit - length(row)
-    row ++ List.duplicate(value, qty)
+  def convert_to_map([axis | coords_color], map \\ %{}) do
+    Map.put(map, axis, convert_to_map(coords_color))
   end
 
   defp update_canvas(canvas, [x] = axis, value) when length(axis) == 1 do

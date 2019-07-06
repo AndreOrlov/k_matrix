@@ -1,4 +1,12 @@
- <form action="colors" method="post" enctype="multipart/form-data"> 
+ <form action="colors" method="post" enctype="multipart/form-data">
+  <div class="form-group">
+    <input type="radio" name="dim_mozaices" id="2-1" value="test" checked/>
+    <label for="2-1">2:1 test</label>
+  </div> 
+    <div class="form-group">
+    <input type="radio" name="dim_mozaices" id="29-29" value="29"/>
+    <label for="29-29">29:29 points</label>
+  </div> 
   <div class="form-group">
     <label>Load matrix file</label>
     <input type="hidden" value="<%= @token %>" name="_csrf_token"/>

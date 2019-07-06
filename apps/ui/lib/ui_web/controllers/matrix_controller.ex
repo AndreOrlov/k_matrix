@@ -5,31 +5,13 @@ defmodule UiWeb.MatrixController do
     render(conn, "upload_file.html", token: get_csrf_token())
   end
 
-  def colors(conn, %{"coords" => coords_json, "matrix" => matrix_json}) do
-    with {:ok, coords} <- Jason.decode(coords_json),
-         {:ok, matrix} <- Jason.decode(matrix_json),
-         light_on(coords) do
-      render(conn, "colors.html",
-        token: get_csrf_token(),
-        matrix: matrix,
-        choiced: key_from_value(coords, matrix),
-        coords: coords
-      )
-    else
-      {:error, _} ->
-        conn
-        |> put_flash(:error, "Error json coords decode")
-        |> redirect(to: "/matrix")
-    end
-  end
-
   def colors(conn, %{"fileToUpload" => %Plug.Upload{path: path}}) do
     with {:ok, matrix} <-
            path
            |> path_to_stream()
            |> Context.Parser.parsing(),
          :ok <- validate_matrix(matrix) do
-      render(conn, "colors.html",
+      render(conn, "matrices.html",
         token: get_csrf_token(),
         matrix: matrix,
         choiced: key_first_element(matrix),
@@ -48,11 +30,31 @@ defmodule UiWeb.MatrixController do
     end
   end
 
+  def colors(conn, %{"coords" => coords_json, "matrix" => matrix_json}) do
+    with {:ok, coords} <- Jason.decode(coords_json),
+         {:ok, matrix} <- Jason.decode(matrix_json),
+         light_on(coords) do
+      render(conn, "colors.html",
+        token: get_csrf_token(),
+        matrix: matrix,
+        choiced: key_from_value(coords, matrix),
+        coords: coords
+      )
+    else
+      {:error, _} ->
+        conn
+        |> put_flash(:error, "Error json coords decode")
+        |> redirect(to: "/matrix")
+    end
+  end
+
   def colors(conn, _params) do
     conn
     |> put_flash(:error, "Error choice file")
     |> redirect(to: "/matrix")
   end
+
+  # private
 
   defp key_from_value(value, matrix) do
     case Enum.find(matrix, fn {_key, val} -> val == value end) do

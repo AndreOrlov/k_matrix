@@ -7,7 +7,7 @@ defmodule Context.Matrix do
 
   @impl GenServer
   def init(:ok) do
-    Context.Tile.init()
+    Context.Tile.Sender.init()
 
     {:ok, :ok}
   end
@@ -22,7 +22,7 @@ defmodule Context.Matrix do
 
   @impl GenServer
   def handle_cast({:send_coords, coords}, state) do
-    :ok = Context.Tile.send_coords(coords)
+    :ok = Context.Tile.Sender.send_coords(coords)
 
     {:noreply, state}
   end

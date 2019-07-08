@@ -2,6 +2,7 @@ defmodule Store.Image do
   @moduledoc false
 
   alias Context.Tile
+  alias Context.Tile.Helpers
 
   use GenServer
 
@@ -19,6 +20,23 @@ defmodule Store.Image do
   # Загрузить координаты всей картинки
   def put_image_coords(coords, matrix_dimensions) do
     GenServer.call(__MODULE__, {:put_image_coords, coords, matrix_dimensions})
+  end
+
+  def map_to_list(map_coords, acc) do
+    map_coords
+    |> Enum.map(fn
+      {k, %{} = map} ->
+        map_to_list(map, [k | acc])
+
+      {k, val} ->
+        Enum.reverse([val | [k | acc]])
+    end)
+  end
+
+  def map_to_list(max_coords) do
+    max_coords
+    |> map_to_list([])
+    |> Helpers.List.flatten(3)
   end
 
   # ДСП

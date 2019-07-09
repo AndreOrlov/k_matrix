@@ -1,7 +1,7 @@
 defmodule UiWeb.MatrixController do
   use UiWeb, :controller
 
-  alias Store.Image
+  alias Store.Image2 , as: Image
 
   def upload_file(conn, _params) do
     render(conn, "upload_file.html", token: get_csrf_token())

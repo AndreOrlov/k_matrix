@@ -11,7 +11,7 @@ defmodule Ui.Application do
       # Start the endpoint when the application starts
       UiWeb.Endpoint,
       Context.Matrix,
-      Store.Image
+      Store.Image2
       # Starts a worker by calling: Ui.Worker.start_link(arg)
       # {Ui.Worker, arg},
     ]

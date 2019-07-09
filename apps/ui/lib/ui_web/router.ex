@@ -18,8 +18,8 @@ defmodule UiWeb.Router do
 
     get "/", PageController, :index
     get "/matrix", MatrixController, :upload_file
-    get "/matrices", MatrixController, :matrices
-    post "/colors", MatrixController, :colors
+    post "/matrices", MatrixController, :matrices
+    get "/colors", MatrixController, :colors
   end
 
   # Other scopes may use custom stacks.

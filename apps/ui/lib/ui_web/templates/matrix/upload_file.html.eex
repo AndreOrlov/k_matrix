@@ -1,10 +1,10 @@
- <form action="colors" method="post" enctype="multipart/form-data">
+ <form action="matrices" method="post" enctype="multipart/form-data">
   <div class="form-group">
-    <input type="radio" name="dim_mozaices" id="2-1" value="test" checked/>
+    <input type="radio" name="dim_matrices" id="2-1" value="test" checked/>
     <label for="2-1">2:1 test</label>
   </div> 
     <div class="form-group">
-    <input type="radio" name="dim_mozaices" id="29-29" value="29"/>
+    <input type="radio" name="dim_matrices" id="29-29" value="29"/>
     <label for="29-29">29:29 points</label>
   </div> 
   <div class="form-group">

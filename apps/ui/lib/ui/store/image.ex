@@ -22,22 +22,27 @@ defmodule Store.Image do
     GenServer.call(__MODULE__, {:put_image_coords, coords, matrix_dimensions})
   end
 
-  def map_to_list(map_coords, acc) do
-    map_coords
-    |> Enum.map(fn
-      {k, %{} = map} ->
-        map_to_list(map, [k | acc])
-
-      {k, val} ->
-        Enum.reverse([val | [k | acc]])
-    end)
+  def qty_matrices() do
+    GenServer.call(__MODULE__, {:qty_matrices})
   end
 
-  def map_to_list(max_coords) do
-    max_coords
-    |> map_to_list([])
-    |> Helpers.List.flatten(3)
-  end
+  # TODO: rad
+  # def map_to_list(map_coords, acc) do
+  #   map_coords
+  #   |> Enum.map(fn
+  #     {k, %{} = map} ->
+  #       map_to_list(map, [k | acc])
+
+  #     {k, val} ->
+  #       [val | [k | acc]]
+  #   end)
+  # end
+
+  # def map_to_list(max_coords) do
+  #   max_coords
+  #   |> map_to_list([])
+  #   |> Helpers.List.flatten(3)
+  # end
 
   # ДСП
 
@@ -89,7 +94,7 @@ defmodule Store.Image do
       coords_to_matrix(y, x, color, dimensions_matrix)
     end
     |> Enum.reduce(%{}, fn map, acc ->
-      Tile.Helpers.Map.deep_merge(acc, map)
+      Helpers.Map.deep_merge(acc, map)
     end)
   end
 
@@ -145,14 +150,33 @@ defmodule Store.Image do
   # Server
 
   @impl GenServer
-  def handle_call({:put_image_coords, coords, matrix_dimensions}, _from, state) do
+  def handle_call(
+        {:put_image_coords, coords, {qty_cols, qty_rows} = matrix_dimensions},
+        _from,
+        state
+      ) do
     picture =
       __build_canvas__(coords, matrix_dimensions)
       |> __draw_image__(coords)
       |> __split_by_matrix__(matrix_dimensions)
 
-    new_state = Map.put(state, :picture, picture)
+    new_state =
+      state
+      |> Map.put(:picture, picture)
+      |> Map.put(:matrix_dimensions, %{qty_cols: qty_cols, qty_rows: qty_rows})
+      |> Map.put(
+        :qty_matrices,
+        %{
+          qty_cols: map_size(picture[0]),
+          qty_rows: map_size(picture)
+        }
+      )
 
     {:reply, {:ok, picture}, new_state}
+  end
+
+  @impl GenServer
+  def handle_call({:qty_matrices}, _from, state) do
+    {:reply, {:ok, state[:qty_matrices]}, state}
   end
 end

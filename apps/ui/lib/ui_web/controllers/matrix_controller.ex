@@ -1,21 +1,23 @@
 defmodule UiWeb.MatrixController do
   use UiWeb, :controller
 
+  alias Store.Image
+
   def upload_file(conn, _params) do
     render(conn, "upload_file.html", token: get_csrf_token())
   end
 
-  def colors(conn, %{"fileToUpload" => %Plug.Upload{path: path}}) do
+  def matrices(conn, %{"fileToUpload" => %Plug.Upload{path: path}}) do
     with {:ok, matrix} <-
            path
            |> path_to_stream()
            |> Context.Parser.parsing(),
-         :ok <- validate_matrix(matrix) do
+         :ok <- validate_matrix(matrix),
+         {:ok, picture} <- Image.put_image_coords(matrix, {2, 2}),
+         {:ok, %{qty_cols: qty_cols, qty_rows: qty_rows}} <- Image.qty_matrices() do
       render(conn, "matrices.html",
-        token: get_csrf_token(),
-        matrix: matrix,
-        choiced: key_first_element(matrix),
-        coords: nil
+        cols: qty_cols,
+        rows: qty_rows
       )
     else
       {:error, :empty} ->

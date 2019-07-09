@@ -31,7 +31,6 @@ defmodule Store.Image2 do
         _from,
         state
       ) do
-    IO.inspect("Start handle_call :put_image_coords", label: :HANDLE_CALL_PUT_IMAGE_COORDS)
     {:reply, {:ok, {}}, state}
   end
 

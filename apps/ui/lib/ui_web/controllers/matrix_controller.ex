@@ -8,13 +8,14 @@ defmodule UiWeb.MatrixController do
   end
 
   def matrices(conn, %{"fileToUpload" => %Plug.Upload{path: path}}) do
-    with {:ok, matrix} <-
+    with {:ok, coords} <-
            path
            |> path_to_stream()
            |> Context.Parser.parsing(),
-         :ok <- validate_matrix(matrix),
-         {:ok, picture} <- Image.put_image_coords(matrix, {2, 2}),
-         {:ok, %{qty_cols: qty_cols, qty_rows: qty_rows}} <- Image.qty_matrices() do
+        #  :ok <- validate_matrix(matrix), # TODO: fix later
+         :ok <- Image.put_image_coords(coords, {2, 2}),
+         {:ok, %{qty_cols: qty_cols, qty_rows: qty_rows} = probe} <- Image.qty_matrices(),
+         IO.inspect(probe, label: :QTY_MATRICES) do
       render(conn, "matrices.html",
         cols: qty_cols,
         rows: qty_rows

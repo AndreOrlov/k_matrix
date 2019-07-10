@@ -13,14 +13,18 @@ defmodule Context.Parser do
   end
 
   def parsing(stream) do
-    res_parsing_csv =
+    # 31_400 строк csv файла (3 колонки) декодит около 450ms
+    {time, res_parsing_csv} =
+    :timer.tc(fn ->
+    # res_parsing_csv =
       stream
       |> CSV.decode()
       |> Enum.to_list()
+    end)
+    IO.inspect(time, label: :TIME_DECODE)
 
-    with {:ok, :validated} <- validate(res_parsing_csv),
-         {:ok, map_coords} <- points_to_map(res_parsing_csv) do
-      {:ok, map_coords}
+    with {:ok, :validated} <- validate(res_parsing_csv) do
+      {:ok, res_parsing_csv}
     else
       _ -> {:error, "Some rows have errors in file"}
     end
@@ -90,17 +94,5 @@ defmodule Context.Parser do
       true -> {:error, :not_validated}
       _ -> {:ok, :validated}
     end
-  end
-
-  defp points_to_map(csv_decoded_rows) do
-    res =
-      csv_decoded_rows
-      |> Enum.map(fn {:ok, point} -> point end)
-      |> Enum.reduce(%{}, fn [color, x, y], map ->
-        {:ok, [x_int, y_int]} = coords_to_integer([x, y])
-        Map.put(map, y_int, %{x_int => color})
-      end)
-
-    {:ok, res}
   end
 end

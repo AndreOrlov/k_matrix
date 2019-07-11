@@ -24,6 +24,10 @@ defmodule Store.Image2 do
     GenServer.call(__MODULE__, {:qty_matrices})
   end
 
+  def points_matrix(y_matrix, x_matrix) do
+    GenServer.call(__MODULE__, {:points_matrix, y_matrix, x_matrix})
+  end
+
   # Server
 
   @impl GenServer
@@ -58,6 +62,19 @@ defmodule Store.Image2 do
         Map.keys(state[:map_coords]),
         state[:matrix_dimensions]
       )
+
+    {:reply, {:ok, res}, state}
+  end
+
+  @impl GenServer
+  def handle_call({:points_matrix, y_matrix, x_matrix}, _from, state) do
+    %{qty_rows: rows, qty_cols: cols} = state[:matrix_dimensions]
+
+    res =
+      for y <- (y_matrix * rows)..((y_matrix + 1) * rows),
+          x <- (x_matrix * cols)..((x_matrix + 1) * cols) do
+        [y, x, state[:map_coords][[x, y]] || "none"]
+      end
 
     {:reply, {:ok, res}, state}
   end

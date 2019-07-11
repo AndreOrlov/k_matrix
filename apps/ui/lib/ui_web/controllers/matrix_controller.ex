@@ -1,7 +1,7 @@
 defmodule UiWeb.MatrixController do
   use UiWeb, :controller
 
-  alias Store.Image2 , as: Image
+  alias Store.Image2, as: Image
 
   def upload_file(conn, _params) do
     render(conn, "upload_file.html", token: get_csrf_token())
@@ -12,7 +12,7 @@ defmodule UiWeb.MatrixController do
            path
            |> path_to_stream()
            |> Context.Parser.parsing(),
-        #  :ok <- validate_matrix(matrix), # TODO: fix later
+         :ok <- validate_matrix(coords),
          :ok <- Image.put_image_coords(coords, {2, 2}),
          {:ok, %{qty_cols: qty_cols, qty_rows: qty_rows} = probe} <- Image.qty_matrices(),
          IO.inspect(probe, label: :QTY_MATRICES) do
@@ -78,9 +78,9 @@ defmodule UiWeb.MatrixController do
     |> File.stream!()
   end
 
-  defp validate_matrix(matrix) do
+  defp validate_matrix(coords) do
     # check length matrix
-    case map_size(matrix) do
+    case length(coords) do
       n when n > 0 -> :ok
       n when n == 0 -> {:error, :empty}
     end

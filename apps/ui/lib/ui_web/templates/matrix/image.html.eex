@@ -3,7 +3,7 @@
         <%= for i <- 1..@rows do %>    
         <tr>
             <%= for j <- 1..@cols do %>
-                <td style="padding: 0 0;" <%= if has_coords(@coords, %{x: j, y: i}), do: "bgcolor=red"%>></td>
+                <td style="padding: 0 0;" <%= if has_coords(@coords, %{y: i, x: j}), do: "bgcolor=red"%>></td>
             <% end %>
         </tr>
         <% end %>

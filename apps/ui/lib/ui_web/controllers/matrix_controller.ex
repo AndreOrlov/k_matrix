@@ -33,23 +33,29 @@ defmodule UiWeb.MatrixController do
     end
   end
 
-  def colors(conn, %{"coords" => coords_json, "matrix" => matrix_json}) do
-    with {:ok, coords} <- Jason.decode(coords_json),
-         {:ok, matrix} <- Jason.decode(matrix_json),
-         light_on(coords) do
-      render(conn, "colors.html",
+  def colors(conn, %{"r" => y_matrix, "c" => x_matrix, "color" => color}) do
+    with {:ok, [y, x]} <- Image.coords_to_integer(y_matrix, x_matrix),
+         {:ok, matrix} <- Image.points_matrix(y, x) do
+      render(
+        conn,
+        "colors.html",
         token: get_csrf_token(),
+        y_matrix: y,
+        x_matrix: x,
         matrix: matrix,
-        choiced: key_from_value(coords, matrix),
-        coords: coords
+        cur_color: color,
+        coords: matrix[color]
       )
     else
-      {:error, _} ->
+      _ ->
         conn
-        |> put_flash(:error, "Error json coords decode")
+        |> put_flash(:error, "Error matrix coords")
         |> redirect(to: "/matrix")
     end
   end
+
+  def colors(conn, %{"r" => y_matrix, "c" => x_matrix}),
+    do: colors(conn, %{"r" => y_matrix, "c" => x_matrix, "color" => nil})
 
   def colors(conn, _params) do
     conn

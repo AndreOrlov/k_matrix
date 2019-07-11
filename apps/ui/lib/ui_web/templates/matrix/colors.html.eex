@@ -1,12 +1,13 @@
 <section class="row">
   <article class="column">
 <form action="colors" method="post">
-  <input type="hidden" value="<%= @token %>" name="_csrf_token"/>
-  <input type="hidden" value="<%= to_json(@matrix) %>" name="matrix"/> 
+  <input type="hidden" name="_csrf_token" value="<%= @token %>"/>
+  <input type="hidden" name="r" value="<%= @y_matrix%>"/>
+  <input type="hidden" name="c" value="<%= @x_matrix%>"/>
   <p>Select color</p>
   <div>
     <%= for {color, coords} <- @matrix do %>
-      <input type="radio" id="<%= color%>" name="coords" value="<%= to_json(coords)%>" <%= color == @choiced && "checked" %>>
+      <input type="radio" id="<%= color%>" name="color" value="<%= color%>" <%= color == @cur_color && "checked" %>>
       <label for="<%= color%>">
         <%= color%>
         <span style="font-size:1.4rem; font-weight: 500;">

@@ -28,6 +28,16 @@ defmodule Store.Image2 do
     GenServer.call(__MODULE__, {:points_matrix, y_matrix, x_matrix})
   end
 
+  def coords_to_integer(y, x), do: coords_to_integer([y, x])
+
+  def coords_to_integer(array) do
+    try do
+      {:ok, Enum.map(array, &String.to_integer/1)}
+    rescue
+      ArgumentError -> {:error, "Coordinate is not integer value"}
+    end
+  end
+
   # Server
 
   @impl GenServer
@@ -73,8 +83,9 @@ defmodule Store.Image2 do
     res =
       for y <- (y_matrix * rows)..((y_matrix + 1) * rows),
           x <- (x_matrix * cols)..((x_matrix + 1) * cols) do
-        [y, x, state[:map_coords][[x, y]] || "none"]
+        [state[:map_coords][[y, x]] || "none", y, x]
       end
+      |> Enum.reduce(%{}, &group_by_color(&1, &2))
 
     {:reply, {:ok, res}, state}
   end
@@ -91,14 +102,6 @@ defmodule Store.Image2 do
       end)
 
     {:ok, res}
-  end
-
-  defp coords_to_integer(array) do
-    try do
-      {:ok, Enum.map(array, &String.to_integer/1)}
-    rescue
-      ArgumentError -> {:error, "Coordinate is not integer value"}
-    end
   end
 
   defp find_max(coords, func) do
@@ -122,5 +125,20 @@ defmodule Store.Image2 do
       qty_rows: round(Float.ceil(y_max / rows)),
       qty_cols: round(Float.ceil(x_max / cols))
     }
+  end
+
+  defp group_by_color([color, y, x], matrix) do
+    {_, matrix_updated} =
+      Map.get_and_update(matrix, color, fn current_value ->
+        {
+          current_value,
+          case current_value do
+            nil -> [[y, x]]
+            _ -> [[y, x] | current_value]
+          end
+        }
+      end)
+
+    matrix_updated
   end
 end

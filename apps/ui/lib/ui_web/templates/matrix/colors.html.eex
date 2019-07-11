@@ -4,7 +4,7 @@
   <input type="hidden" name="_csrf_token" value="<%= @token %>"/>
   <input type="hidden" name="r" value="<%= @y_matrix%>"/>
   <input type="hidden" name="c" value="<%= @x_matrix%>"/>
-  <p>Select color</p>
+  <p>Select color in matrix (y, x) = <%=" (#{@y_matrix}, #{@x_matrix})" %></p>
   <div>
     <%= for {color, coords} <- @matrix do %>
       <input type="radio" id="<%= color%>" name="color" value="<%= color%>" <%= color == @cur_color && "checked" %>>

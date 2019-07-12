@@ -1,13 +1,11 @@
 defmodule UiWeb.MatrixView do
   use UiWeb, :view
 
+  alias Store.Image2, as: Image
+
   # dimensions tile. Tile - отдельная микросхема MAX7219 с матрицей диодов 8 х 8
   @cols Application.get_env(:matrix, :dimensions)[:tile_cols]
   @rows Application.get_env(:matrix, :dimensions)[:tile_rows]
-
-  # matrix in tiles
-  @matrix_width Application.get_env(:matrix, :dimensions)[:weight]
-  @matrix_height Application.get_env(:matrix, :dimensions)[:height]
 
   def to_json(data) do
     Jason.encode!(data)
@@ -15,8 +13,9 @@ defmodule UiWeb.MatrixView do
 
   def render("image.html", %{coords: coords}) do
     # TODO: вынести в виде структуры аттрибута модуля этого
-    qty_cols = @matrix_width * @cols
-    qty_rows = @matrix_height * @rows
+    {:ok, %{qty_cols: matrix_width, qty_rows: matrix_height}} = Image.qty_matrices()
+    qty_cols = matrix_width * @cols
+    qty_rows = matrix_height * @rows
     quad_size = 10
     borders_width = 2
 

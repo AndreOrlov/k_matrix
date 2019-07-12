@@ -36,6 +36,26 @@ defmodule UiWeb.MatrixController do
     end
   end
 
+  def matrices(conn, %{"fileToUpload" => file}) do
+    conn
+    |> put_flash(:error, "Choice file")
+    |> redirect(to: "/matrix")
+  end
+
+  def matrices(conn, _params) do
+    with {:ok, %{qty_cols: qty_cols, qty_rows: qty_rows}} <- Image.qty_matrices() do
+      render(conn, "matrices.html",
+        cols: qty_cols,
+        rows: qty_rows
+      )
+    else
+      _ ->
+        conn
+        |> put_flash(:error, "File not choice or data corrupt. Please, reupload file")
+        |> redirect(to: "/matrix")
+    end
+  end
+
   def colors(conn, %{"r" => y_matrix, "c" => x_matrix, "color" => color}) do
     with {:ok, [y, x]} <- Image.coords_to_integer(y_matrix, x_matrix),
          {:ok, matrix} <- Image.points_matrix(y, x) do

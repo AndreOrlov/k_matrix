@@ -67,13 +67,19 @@ defmodule Store.Image2 do
 
   @impl GenServer
   def handle_call({:qty_matrices}, _from, state) do
-    res =
-      calc_qty_matrices(
-        Map.keys(state[:map_coords]),
-        state[:matrix_dimensions]
-      )
+    case state[:map_coords] do
+      nil ->
+        {:reply, {:error, :not_coords}, state}
 
-    {:reply, {:ok, res}, state}
+      _ ->
+        res =
+          calc_qty_matrices(
+            Map.keys(state[:map_coords]),
+            state[:matrix_dimensions]
+          )
+
+        {:reply, {:ok, res}, state}
+    end
   end
 
   @impl GenServer

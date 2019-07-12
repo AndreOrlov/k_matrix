@@ -20,6 +20,8 @@
     <%= submit "Submit", class: "btn btn-primary" %>
   </div>
 </form> 
+<a href="matrices">To matrices</a>
+<br>
 <a href="matrix">Upload file</a>
   </article>
   <article class="column">

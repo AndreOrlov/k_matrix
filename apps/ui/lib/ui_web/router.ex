@@ -19,6 +19,7 @@ defmodule UiWeb.Router do
     get "/", PageController, :index
     get "/matrix", MatrixController, :upload_file
     post "/matrices", MatrixController, :matrices
+    get "/matrices", MatrixController, :matrices
     get "/colors", MatrixController, :colors
     post "/colors", MatrixController, :colors
   end

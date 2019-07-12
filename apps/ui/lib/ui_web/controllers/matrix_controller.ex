@@ -1,19 +1,22 @@
 defmodule UiWeb.MatrixController do
   use UiWeb, :controller
 
+  import Store.Image2, only: [coords_to_integer: 1]
+
   alias Store.Image2, as: Image
 
   def upload_file(conn, _params) do
     render(conn, "upload_file.html", token: get_csrf_token())
   end
 
-  def matrices(conn, %{"fileToUpload" => %Plug.Upload{path: path}}) do
-    with {:ok, coords} <-
+  def matrices(conn, %{"fileToUpload" => %Plug.Upload{path: path}, "dim_matrices" => dims}) do
+    with {:ok, [matrix_rows, matrix_cols]} <- get_dims(dims),
+         {:ok, coords} <-
            path
            |> path_to_stream()
            |> Context.Parser.parsing(),
          :ok <- validate_matrix(coords),
-         :ok <- Image.put_image_coords(coords, {2, 2}),
+         :ok <- Image.put_image_coords(coords, {matrix_rows, matrix_cols}),
          {:ok, %{qty_cols: qty_cols, qty_rows: qty_rows} = probe} <- Image.qty_matrices(),
          IO.inspect(probe, label: :QTY_MATRICES) do
       render(conn, "matrices.html",
@@ -95,5 +98,10 @@ defmodule UiWeb.MatrixController do
   # coords [[x1, y1], ... ,[xn, yn]]
   defp light_on(coords) do
     Context.Matrix.send_coords(coords)
+  end
+
+  defp get_dims(str) do
+    String.split(str, ":")
+    |> coords_to_integer()
   end
 end

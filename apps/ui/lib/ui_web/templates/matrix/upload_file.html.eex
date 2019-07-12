@@ -1,11 +1,11 @@
  <form action="matrices" method="post" enctype="multipart/form-data">
   <div class="form-group">
-    <input type="radio" name="dim_matrices" id="2-1" value="test" checked/>
-    <label for="2-1">2:1 test</label>
+    <input type="radio" name="dim_matrices" id="2:1" value="2:1" checked>
+    <label for="2:1">2:1 test</label>
   </div> 
     <div class="form-group">
-    <input type="radio" name="dim_matrices" id="29-29" value="29"/>
-    <label for="29-29">29:29 points</label>
+    <input type="radio" name="dim_matrices" id="29:29" value="29:29">
+    <label for="29:29">29:29 points</label>
   </div> 
   <div class="form-group">
     <label>Load matrix file</label>

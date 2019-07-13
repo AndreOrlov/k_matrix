@@ -3,10 +3,6 @@ defmodule UiWeb.MatrixView do
 
   alias Store.Image2, as: Image
 
-  # dimensions tile. Tile - отдельная микросхема MAX7219 с матрицей диодов 8 х 8
-  @cols Application.get_env(:matrix, :dimensions)[:tile_cols]
-  @rows Application.get_env(:matrix, :dimensions)[:tile_rows]
-
   def to_json(data) do
     Jason.encode!(data)
   end
@@ -17,7 +13,6 @@ defmodule UiWeb.MatrixView do
     qty_cols = matrix_width
     qty_rows = matrix_height
     quad_size = 10
-    borders_width = 2
 
     {table_width, table_height} = table_dimensions(qty_cols, qty_rows, quad_size)
 

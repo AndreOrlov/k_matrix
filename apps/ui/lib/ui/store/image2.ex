@@ -48,9 +48,9 @@ defmodule Store.Image2 do
 
   @impl GenServer
   def handle_call(
-        {:put_image_coords, coords, {qty_cols, qty_rows} = matrix_dimensions},
+        {:put_image_coords, coords, {qty_cols, qty_rows}},
         _from,
-        state
+        _state
       ) do
     {res, new_state} =
       with {:ok, map_coords} <- points_to_map(coords) do
@@ -97,7 +97,7 @@ defmodule Store.Image2 do
   end
 
   @impl GenServer
-  def handle_call({:points_matrix, y_matrix, x_matrix} = probe, _from, state) do
+  def handle_call({:points_matrix, y_matrix, x_matrix}, _from, state) do
     %{qty_rows: rows, qty_cols: cols} = state[:matrix_dimensions]
 
     res =

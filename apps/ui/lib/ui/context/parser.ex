@@ -76,7 +76,7 @@ defmodule Context.Parser do
         {:error, _} ->
           true
 
-        {:ok, [color, x, y]} ->
+        {:ok, [_color, x, y]} ->
           case coords_to_integer([x, y]) do
             {:ok, _} -> false
             {:error, _} -> true

@@ -17,7 +17,7 @@ defmodule UiWeb.MatrixController do
            |> Context.Parser.parsing(),
          :ok <- validate_matrix(coords),
          :ok <- Image.put_image_coords(coords, {matrix_rows, matrix_cols}),
-         {:ok, %{qty_cols: qty_cols, qty_rows: qty_rows} = probe} <- Image.qty_matrices() do
+         {:ok, %{qty_cols: qty_cols, qty_rows: qty_rows}} <- Image.qty_matrices() do
       render(conn, "matrices.html",
         cols: qty_cols,
         rows: qty_rows
@@ -33,12 +33,6 @@ defmodule UiWeb.MatrixController do
         |> put_flash(:error, "Error file parsing")
         |> redirect(to: "/matrix")
     end
-  end
-
-  def matrices(conn, %{"fileToUpload" => file}) do
-    conn
-    |> put_flash(:error, "Choice file")
-    |> redirect(to: "/matrix")
   end
 
   def matrices(conn, _params) do
@@ -86,19 +80,6 @@ defmodule UiWeb.MatrixController do
   end
 
   # private
-
-  defp key_from_value(value, matrix) do
-    case Enum.find(matrix, fn {_key, val} -> val == value end) do
-      {key, _} -> key
-      _ -> nil
-    end
-  end
-
-  defp key_first_element(matrix) do
-    matrix
-    |> Map.keys()
-    |> List.first()
-  end
 
   defp path_to_stream(path) do
     path

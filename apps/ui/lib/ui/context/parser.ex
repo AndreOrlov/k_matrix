@@ -14,14 +14,10 @@ defmodule Context.Parser do
 
   def parsing(stream) do
     # 31_400 строк csv файла (3 колонки) декодит около 450ms
-    {time, res_parsing_csv} =
-    :timer.tc(fn ->
-    # res_parsing_csv =
+    res_parsing_csv =
       stream
       |> CSV.decode()
       |> Enum.to_list()
-    end)
-    IO.inspect(time, label: :TIME_DECODE)
 
     with {:ok, :validated} <- validate(res_parsing_csv) do
       {:ok, res_parsing_csv}

@@ -17,8 +17,7 @@ defmodule UiWeb.MatrixController do
            |> Context.Parser.parsing(),
          :ok <- validate_matrix(coords),
          :ok <- Image.put_image_coords(coords, {matrix_rows, matrix_cols}),
-         {:ok, %{qty_cols: qty_cols, qty_rows: qty_rows} = probe} <- Image.qty_matrices(),
-         IO.inspect(probe, label: :QTY_MATRICES) do
+         {:ok, %{qty_cols: qty_cols, qty_rows: qty_rows} = probe} <- Image.qty_matrices() do
       render(conn, "matrices.html",
         cols: qty_cols,
         rows: qty_rows

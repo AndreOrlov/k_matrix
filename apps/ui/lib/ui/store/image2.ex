@@ -14,9 +14,15 @@ defmodule Store.Image2 do
 
   # Client API
 
-  # Загрузить координаты всей картинки
+  # Загрузить координаты всей картинки.
+  # ВАЖНО: в загружаемых координатах начало - 1, 1, сохраняем с началом координат 0, 0
   def put_image_coords(coords, matrix_dimensions) do
     GenServer.call(__MODULE__, {:put_image_coords, coords, matrix_dimensions})
+  end
+
+  # Получить размерность матрицы. %{qty_cols: qty_cols, qty_rows: qty_rows}
+  def matrix_dimensions() do
+    GenServer.call(__MODULE__, {:matrix_dimensions})
   end
 
   # {qty_rows, qty_cols}. Кол-во матриц, в кот. укладывают мозаику
@@ -66,6 +72,14 @@ defmodule Store.Image2 do
   end
 
   @impl GenServer
+  def handle_call({:matrix_dimensions}, _from, state) do
+    case state[:matrix_dimensions] do
+      nil -> {:reply, {:error, :not_matrix_dimensions}, state}
+      res -> {:reply, {:ok, res}, state}
+    end
+  end
+
+  @impl GenServer
   def handle_call({:qty_matrices}, _from, state) do
     case state[:map_coords] do
       nil ->
@@ -83,13 +97,13 @@ defmodule Store.Image2 do
   end
 
   @impl GenServer
-  def handle_call({:points_matrix, y_matrix, x_matrix}, _from, state) do
+  def handle_call({:points_matrix, y_matrix, x_matrix} = probe, _from, state) do
     %{qty_rows: rows, qty_cols: cols} = state[:matrix_dimensions]
 
     res =
-      for y <- (y_matrix * rows)..((y_matrix + 1) * rows),
-          x <- (x_matrix * cols)..((x_matrix + 1) * cols) do
-        [state[:map_coords][[y, x]] || "none", y, x]
+      for y <- (y_matrix * rows)..((y_matrix + 1) * rows - 1),
+          x <- (x_matrix * cols)..((x_matrix + 1) * cols - 1) do
+        [state[:map_coords][[y, x]] || "none", rem(y, rows), rem(x, cols)]
       end
       |> Enum.reduce(%{}, &group_by_color(&1, &2))
 
@@ -104,7 +118,8 @@ defmodule Store.Image2 do
       |> Enum.map(fn {:ok, point} -> point end)
       |> Enum.reduce(%{}, fn [color, x, y], map ->
         {:ok, [x_int, y_int]} = coords_to_integer([x, y])
-        Map.put(map, [y_int, x_int], color)
+        # начало кооординат переводим в 0, 0
+        Map.put(map, [y_int - 1, x_int - 1], color)
       end)
 
     {:ok, res}
@@ -124,8 +139,6 @@ defmodule Store.Image2 do
 
     x_max = find_max(yx_coords, fn [_y, x] -> x end)
     y_max = Task.await(calc_y_max)
-
-    IO.inspect({y_max, x_max}, label: :MAX_YX)
 
     %{
       qty_rows: round(Float.ceil(y_max / rows)),

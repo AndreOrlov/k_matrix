@@ -12,10 +12,10 @@ defmodule UiWeb.MatrixView do
   end
 
   def render("image.html", %{coords: coords}) do
-    # TODO: вынести в виде структуры аттрибута модуля этого
-    {:ok, %{qty_cols: matrix_width, qty_rows: matrix_height}} = Image.qty_matrices()
-    qty_cols = matrix_width * @cols
-    qty_rows = matrix_height * @rows
+    {:ok, %{qty_cols: matrix_width, qty_rows: matrix_height}} = Image.matrix_dimensions()
+
+    qty_cols = matrix_width
+    qty_rows = matrix_height
     quad_size = 10
     borders_width = 2
 
@@ -41,8 +41,8 @@ defmodule UiWeb.MatrixView do
     {table_width, table_height}
   end
 
-  def has_coords(coords, %{x: x, y: y}) do
-    Enum.find_value(coords, &(&1 == [x, y]))
+  def has_coords(coords, %{y: y, x: x}) do
+    Enum.find_value(coords, &(&1 == [y, x]))
   end
 
   def uri_encode(path, list_params) do

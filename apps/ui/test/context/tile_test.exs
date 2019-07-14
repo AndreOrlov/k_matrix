@@ -28,7 +28,7 @@ defmodule Context.TileTest do
       [[7, 7]]
     ]
 
-    assert res == Context.Tile.__coord_by_tiles__(coords)
+    assert res == Context.Tile.coord_by_tiles(coords)
   end
 
   # @tag :skip
@@ -47,7 +47,7 @@ defmodule Context.TileTest do
       []
     ]
 
-    assert res == Context.Tile.__coord_by_tiles__(coords)
+    assert res == Context.Tile.coord_by_tiles(coords)
   end
 
   # @tag :skip
@@ -56,7 +56,7 @@ defmodule Context.TileTest do
       [-1, -1]
     ]
 
-    assert_raise FunctionClauseError, fn -> Context.Tile.__coord_by_tiles__(coords) end
+    assert_raise FunctionClauseError, fn -> Context.Tile.coord_by_tiles(coords) end
   end
 
   # @tag :skip
@@ -65,6 +65,6 @@ defmodule Context.TileTest do
       [17, 17]
     ]
 
-    assert_raise FunctionClauseError, fn -> Context.Tile.__coord_by_tiles__(coords) end
+    assert_raise FunctionClauseError, fn -> Context.Tile.coord_by_tiles(coords) end
   end
 end

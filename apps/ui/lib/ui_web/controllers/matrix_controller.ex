@@ -1,9 +1,7 @@
 defmodule UiWeb.MatrixController do
   use UiWeb, :controller
 
-  import Store.Image2, only: [coords_to_integer: 1]
-
-  alias Store.Image2, as: Image
+  alias Store.Image
 
   def upload_file(conn, _params) do
     render(conn, "upload_file.html", token: get_csrf_token())
@@ -102,6 +100,6 @@ defmodule UiWeb.MatrixController do
 
   defp get_dims(str) do
     String.split(str, ":")
-    |> coords_to_integer()
+    |> Image.coords_to_integer()
   end
 end

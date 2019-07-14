@@ -1,7 +1,7 @@
 defmodule UiWeb.MatrixView do
   use UiWeb, :view
 
-  alias Store.Image2, as: Image
+  alias Store.Image
 
   def to_json(data) do
     Jason.encode!(data)

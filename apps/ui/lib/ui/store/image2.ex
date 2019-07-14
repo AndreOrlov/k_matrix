@@ -131,6 +131,7 @@ defmodule Store.Image2 do
     |> Enum.max()
   end
 
+  # list coords [[y0,x0], ..., [yn, xn]]. Начало координат 0, 0. Значения Integer
   defp calc_qty_matrices(yx_coords, %{qty_rows: rows, qty_cols: cols}) do
     calc_y_max =
       Task.async(fn ->

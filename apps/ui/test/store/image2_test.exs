@@ -19,7 +19,7 @@ defmodule Store.Image2Test do
     end
 
     # @tag :skip
-    test "right qty fp matrix dimensoions 1, 1", %{coords: coords} do
+    test "right qty fp matrix dimensoions 1, 1 (less max y, x)", %{coords: coords} do
       Store.Image2.put_image_coords(coords, {1, 1})
 
       res = {:ok, %{qty_cols: 3, qty_rows: 3}}
@@ -27,13 +27,33 @@ defmodule Store.Image2Test do
       assert res == Store.Image2.qty_matrices()
     end
 
+    # TODO: fix test
     # @tag :skip
-    test "right qty fp matrix dimensoions 2, 2", %{coords: coords} do
-      Store.Image2.put_image_coords(coords, {2, 2})
+    test "right qty fp matrix dimensoions 3, 3 (eq max y, x)", %{coords: coords} do
+      Store.Image2.put_image_coords(coords, {3, 3})
 
       res = {:ok, %{qty_cols: 2, qty_rows: 2}}
 
       assert res == Store.Image2.qty_matrices()
+    end
+
+    # TODO: fix test
+    # @tag :skip
+    test "right qty fp matrix dimensoions 4, 4 (more max y, x)", %{coords: coords} do
+      Store.Image2.put_image_coords(coords, {4, 4})
+
+      res = {:ok, %{qty_cols: 1, qty_rows: 1}}
+
+      assert res == Store.Image2.qty_matrices()
+    end
+
+    # @tag :skip
+    test "matrix_dimensions did not changed", %{coords: coords} do
+      Store.Image2.put_image_coords(coords, {2, 1})
+
+      res = {:ok, %{qty_cols: 2, qty_rows: 1}}
+
+      assert res == Store.Image2.matrix_dimensions()
     end
 
     @tag :skip

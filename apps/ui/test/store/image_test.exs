@@ -18,6 +18,21 @@ defmodule Store.ImageTest do
       %{coords: coords}
     end
 
+    # @test :skip
+    test "has not duplicate" do
+      coords = [
+        {:ok, ["A00", "1", "1"]},
+        {:ok, ["A01", "1", "1"]}
+      ]
+
+      # одинаковые координаты сольются
+      res = {:ok, %{qty_cols: 1, qty_rows: 1}}
+
+      :ok = Store.Image.put_image_coords(coords, {1, 1}) |> IO.inspect()
+
+      assert res == Store.Image.qty_matrices()
+    end
+
     # @tag :skip
     test "right qty fp matrix dimensoions 1, 1 (less max y, x)", %{coords: coords} do
       Store.Image.put_image_coords(coords, {1, 1})

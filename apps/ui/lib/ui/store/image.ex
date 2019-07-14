@@ -142,8 +142,8 @@ defmodule Store.Image do
     y_max = Task.await(calc_y_max)
 
     %{
-      qty_rows: round(Float.ceil(y_max / rows)),
-      qty_cols: round(Float.ceil(x_max / cols))
+      qty_rows: round(Float.ceil((y_max + 1) / rows)),
+      qty_cols: round(Float.ceil((x_max + 1) / cols))
     }
   end
 

@@ -27,17 +27,15 @@ defmodule Store.ImageTest do
       assert res == Store.Image.qty_matrices()
     end
 
-    # TODO: fix test
     # @tag :skip
     test "right qty fp matrix dimensoions 3, 3 (eq max y, x)", %{coords: coords} do
       Store.Image.put_image_coords(coords, {3, 3})
 
-      res = {:ok, %{qty_cols: 2, qty_rows: 2}}
+      res = {:ok, %{qty_cols: 1, qty_rows: 1}}
 
       assert res == Store.Image.qty_matrices()
     end
 
-    # TODO: fix test
     # @tag :skip
     test "right qty fp matrix dimensoions 4, 4 (more max y, x)", %{coords: coords} do
       Store.Image.put_image_coords(coords, {4, 4})

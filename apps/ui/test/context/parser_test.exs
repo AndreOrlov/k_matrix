@@ -12,23 +12,7 @@ defmodule Context.ParserTest do
       string_to_stream(string)
       |> Context.Parser.parsing()
 
-    assert map_size(res) == 2
-    assert integers?(Map.values(res))
-  end
-
-  # @tag :skip
-  test "double color" do
-    string = """
-    A01,1,1
-    A01,1,2
-    """
-
-    {:ok, res} =
-      string_to_stream(string)
-      |> Context.Parser.parsing()
-
-    assert map_size(res) == 1
-    assert integers?(Map.values(res))
+    assert length(res) == 2
   end
 
   # wrong format string
@@ -47,8 +31,6 @@ defmodule Context.ParserTest do
     assert {:error, _} = res
   end
 
-  # TODO: add case test where columns more 3th
-
   # @tag :skip
   test "wrong coordinates" do
     string = """
@@ -63,17 +45,13 @@ defmodule Context.ParserTest do
     assert {:error, _} = res
   end
 
+  # helpers
+
   defp string_to_stream(string) do
     {:ok, stream} =
       string
       |> StringIO.open()
 
     IO.binstream(stream, :line)
-  end
-
-  defp integers?(array) when is_list(array) do
-    array
-    |> List.flatten()
-    |> Enum.all?(&is_integer/1)
   end
 end

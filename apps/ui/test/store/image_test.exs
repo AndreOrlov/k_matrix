@@ -1,123 +1,79 @@
 defmodule Store.ImageTest do
   use ExUnit.Case
 
-  # @tag :skip
-  test "#put_image_coords" do
-    # {qty_cols, qty_rows}
-    matrix_dimensions = {2, 1}
+  describe "#points_matrix" do
+    setup do
+      coords = [
+        {:ok, ["A00", "1", "1"]},
+        {:ok, ["A01", "1", "2"]},
+        {:ok, ["A02", "1", "3"]},
+        {:ok, ["B00", "2", "1"]},
+        {:ok, ["B01", "2", "2"]},
+        {:ok, ["B02", "2", "3"]},
+        {:ok, ["C00", "3", "1"]},
+        {:ok, ["C01", "3", "2"]},
+        {:ok, ["C02", "3", "3"]}
+      ]
 
-    # [y, x] coords, 0 based index
-    coords = %{
-      "A01" => [[0, 0], [0, 1], [1, 2]],
-      "B01" => [[1, 0], [2, 2]]
-    }
+      %{coords: coords}
+    end
 
-    # одна точка в матрице - %{y_matrix => %{y_matrix => %{y_in_matrix => %{x_in_matrix => color}}}}
-    res = %{
-      0 => %{
-        0 => %{0 => %{0 => "A01", 1 => "A01"}},
-        1 => %{0 => %{0 => "none", 1 => "none"}}
-      },
-      1 => %{
-        0 => %{0 => %{0 => "B01", 1 => "none"}},
-        1 => %{0 => %{0 => "A01", 1 => "none"}}
-      },
-      2 => %{
-        0 => %{0 => %{0 => "none", 1 => "none"}},
-        1 => %{0 => %{0 => "B01", 1 => "none"}}
-      }
-    }
+    # @test :skip
+    test "has not duplicate" do
+      coords = [
+        {:ok, ["A00", "1", "1"]},
+        {:ok, ["A01", "1", "1"]}
+      ]
 
-    assert {:ok, res} == Store.Image.put_image_coords(coords, matrix_dimensions)
+      # одинаковые координаты сольются
+      res = {:ok, %{qty_cols: 1, qty_rows: 1}}
+
+      :ok = Store.Image.put_image_coords(coords, {1, 1})
+
+      assert res == Store.Image.qty_matrices()
+    end
+
+    # @tag :skip
+    test "right qty fp matrix dimensoions 1, 1 (less max y, x)", %{coords: coords} do
+      Store.Image.put_image_coords(coords, {1, 1})
+
+      res = {:ok, %{qty_cols: 3, qty_rows: 3}}
+
+      assert res == Store.Image.qty_matrices()
+    end
+
+    # @tag :skip
+    test "right qty fp matrix dimensoions 3, 3 (eq max y, x)", %{coords: coords} do
+      Store.Image.put_image_coords(coords, {3, 3})
+
+      res = {:ok, %{qty_cols: 1, qty_rows: 1}}
+
+      assert res == Store.Image.qty_matrices()
+    end
+
+    # @tag :skip
+    test "right qty fp matrix dimensoions 4, 4 (more max y, x)", %{coords: coords} do
+      Store.Image.put_image_coords(coords, {4, 4})
+
+      res = {:ok, %{qty_cols: 1, qty_rows: 1}}
+
+      assert res == Store.Image.qty_matrices()
+    end
+
+    # @tag :skip
+    test "matrix_dimensions did not changed", %{coords: coords} do
+      Store.Image.put_image_coords(coords, {2, 1})
+
+      res = {:ok, %{qty_cols: 2, qty_rows: 1}}
+
+      assert res == Store.Image.matrix_dimensions()
+    end
+
+    @tag :skip
+    test "points in matrix right bottom corner" do
+    end
   end
 
-  # @tag :skip
-  test "build empty canvas" do
-    # {qty_cols, qty_rows}
-    matrix_dimensions = {2, 1}
-
-    coords = %{
-      "A01" => [[0, 0], [1, 0]],
-      "B01" => [[0, 1], [3, 3]]
-    }
-
-    # [y, x] coords, 0 based index
-    res = [
-      ["none", "none", "none", "none"],
-      ["none", "none", "none", "none"],
-      ["none", "none", "none", "none"],
-      ["none", "none", "none", "none"]
-    ]
-
-    assert res == Store.Image.__build_canvas__(coords, matrix_dimensions, "none")
-  end
-
-  # @tag :skip
-  test "draw image on canvas" do
-    canvas = [
-      ["none", "none", "none", "none"],
-      ["none", "none", "none", "none"],
-      ["none", "none", "none", "none"]
-    ]
-
-    # [y, x] coords, 0 based index
-    coords = %{
-      "A01" => [[0, 0], [0, 1]],
-      "B01" => [[1, 0], [2, 2]]
-    }
-
-    res = [
-      ["A01", "A01", "none", "none"],
-      ["B01", "none", "none", "none"],
-      ["none", "none", "B01", "none"]
-    ]
-
-    assert res == Store.Image.__draw_image__(canvas, coords)
-  end
-
-  # @tag :skip
-  test "split by matrix" do
-    # {qty_cols, qty_rows}
-    matrix_dimensions = {2, 3}
-
-    # image on canvas
-    picture = [
-      ["A00", "A01", "none", "none"],
-      ["B00", "none", "B02", "none"],
-      ["none", "none", "C02", "none"],
-      ["none", "D01", "none", "none"],
-      ["none", "none", "E02", "none"],
-      ["none", "none", "none", "F03"]
-    ]
-
-    # одна точка в матрице - %{y_matrix => %{y_matrix => %{y_in_matrix => %{x_in_matrix => color}}}}
-    matriсes = %{
-      0 => %{
-        0 => %{
-          0 => %{0 => "A00", 1 => "A01"},
-          1 => %{0 => "B00", 1 => "none"},
-          2 => %{0 => "none", 1 => "none"}
-        },
-        1 => %{
-          0 => %{0 => "none", 1 => "none"},
-          1 => %{0 => "B02", 1 => "none"},
-          2 => %{0 => "C02", 1 => "none"}
-        }
-      },
-      1 => %{
-        0 => %{
-          0 => %{0 => "none", 1 => "D01"},
-          1 => %{0 => "none", 1 => "none"},
-          2 => %{0 => "none", 1 => "none"}
-        },
-        1 => %{
-          0 => %{0 => "none", 1 => "none"},
-          1 => %{0 => "E02", 1 => "none"},
-          2 => %{0 => "none", 1 => "F03"}
-        }
-      }
-    }
-
-    assert matriсes == Store.Image.__split_by_matrix__(picture, matrix_dimensions)
-  end
+  # TODO: тестить qty_matrices cases max координата 0, или равна точкам в матрице. При началах координат 0,0
+  # TODO: test for Image#points_matrix для одной матрицы
 end

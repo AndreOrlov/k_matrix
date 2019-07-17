@@ -1,9 +1,9 @@
 <div>
     <table border="1" style="width:<%=@table_width %>px;height:<%= @table_height%>px">
-        <%= for i <- 1..@rows do %>    
+        <%= for i <- 0..@rows - 1 do %>    
         <tr>
-            <%= for j <- 1..@cols do %>
-                <td style="padding: 0 0;width:<%= 10%>px" <%= if has_coords(@coords, %{x: j, y: i}), do: "bgcolor=red"%>></td>
+            <%= for j <- 0..@cols - 1 do %>
+                <td style="padding: 0 0;" <%= if has_coords(@coords, %{y: i, x: j}), do: "bgcolor=red"%>></td>
             <% end %>
         </tr>
         <% end %>

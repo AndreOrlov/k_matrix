@@ -1,0 +1,16 @@
+<div>
+  <p>MATRICES</>
+  <% {table_width, table_height} = table_dimensions(@cols, @rows, 40) %>
+  <table border="1" style="width:<%= table_width %>px;height:<%= table_height %>px">
+      <%= for i <- 0..@rows - 1 do %>    
+      <tr>
+          <%= for j <- 0..@cols - 1 do %>
+              <td style="padding: 0 0; text-align: center;">
+                <%= link "to", to: Routes.matrix_path(@conn, :colors, r: i, c: j) %>
+              </td>
+          <% end %>
+      </tr>
+      <% end %> 
+  </table>
+  <a href="matrix">Upload file</a>
+</div>

@@ -9,26 +9,25 @@ defmodule Context.Tile do
   @matrix_width Application.get_env(:matrix, :dimensions)[:weight]
   @matrix_height Application.get_env(:matrix, :dimensions)[:height]
 
-  defmacro is_valid_coord(x, y) do
+  defmacro is_valid_coord(y, x) do
     quote do
-      is_integer(unquote(x)) and
-        is_integer(unquote(y)) and
-        unquote(x) > 0 and
-        unquote(y) > 0 and
-        unquote(x) <= @cols * @matrix_width and
-        unquote(y) <= @rows * @matrix_height
+      is_integer(unquote(y)) and
+        is_integer(unquote(x)) and
+        unquote(y) >= 0 and
+        unquote(x) >= 0 and
+        unquote(y) < @cols * @matrix_height and
+        unquote(x) < @rows * @matrix_width
     end
   end
 
-  # Params x, y координаты по всей матрице, с началом координат [1, 1]
+  # Params y, x координаты по всей матрице, с началом координат [0, 0]
   # На выходе [[[y1, x1], ..., [yi, xi]], ..., [n_tiles]] - координаты во всей матрице,
-  #   разбитые по tiles, с началом координат [0, 0],
-  #   координаты поменяны местами [y, x]
-  def coord_by_tiles(x, y, height \\ @matrix_height, width \\ @matrix_width)
+  #   разбитые по tiles
+  def coord_by_tiles(y, x, height \\ @matrix_height, width \\ @matrix_width)
 
-  def coord_by_tiles(x, y, height, width) when is_valid_coord(x, y) do
-    {:div, x_div, :rem, x_rem} = div_rem(x - 1, @cols)
-    {:div, y_div, :rem, y_rem} = div_rem(y - 1, @rows)
+  def coord_by_tiles(y, x, height, width) when is_valid_coord(y, x) do
+    {:div, x_div, :rem, x_rem} = div_rem(x, @cols)
+    {:div, y_div, :rem, y_rem} = div_rem(y, @rows)
 
     for y_tile <- 0..(height - 1), x_tile <- 0..(width - 1) do
       case {y_tile, x_tile} do
@@ -38,10 +37,10 @@ defmodule Context.Tile do
     end
   end
 
-  # coords [[x1, y1], ...,[xn, yn]], координаты в каждом tile.
+  # coords [[y1, x1], ...,[yn, xn]], координаты в каждом tile
   def coord_by_tiles([[_, _] | _] = coords) do
     coords
-    |> Enum.map(fn [x, y] -> coord_by_tiles(x, y) end)
+    |> Enum.map(fn [y, x] -> coord_by_tiles(y, x) end)
     |> Context.Tile.Helpers.transpose()
     |> Enum.map(fn coords_tile ->
       Enum.filter(coords_tile, & &1)

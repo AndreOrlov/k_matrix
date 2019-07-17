@@ -12,13 +12,13 @@ defmodule Context.TileTest do
   test "global correct coords to coords by tiles" do
     coords = [
       # left top corner. T0
-      [1, 1],
+      [0, 0],
       # T1
-      [9, 1],
+      [0, 8],
       # T2
-      [1, 9],
+      [8, 0],
       # bottom right corner. T3
-      [16, 16]
+      [15, 15]
     ]
 
     res = [
@@ -35,13 +35,13 @@ defmodule Context.TileTest do
   test "correct coords to some coords in ome tiles" do
     coords = [
       # left top corner. T0
-      [1, 1],
+      [0, 0],
       # T0
-      [2, 1]
+      [1, 0]
     ]
 
     res = [
-      [[0, 0], [0, 1]],
+      [[0, 0], [1, 0]],
       [],
       [],
       []

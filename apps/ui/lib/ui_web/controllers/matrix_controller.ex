@@ -49,7 +49,9 @@ defmodule UiWeb.MatrixController do
 
   def colors(conn, %{"r" => y_matrix, "c" => x_matrix, "color" => color}) do
     with {:ok, [y, x]} <- Image.coords_to_integer(y_matrix, x_matrix),
-         {:ok, matrix} <- Image.points_matrix(y, x) do
+         {:ok, matrix} <- Image.points_matrix(y, x),
+         coords = matrix[color],
+         light_on(coords) do
       render(
         conn,
         "colors.html",
@@ -58,7 +60,7 @@ defmodule UiWeb.MatrixController do
         x_matrix: x,
         matrix: matrix,
         cur_color: color,
-        coords: matrix[color]
+        coords: coords
       )
     else
       _ ->

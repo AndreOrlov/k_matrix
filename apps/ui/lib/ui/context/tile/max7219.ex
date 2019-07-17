@@ -7,7 +7,7 @@ defmodule Context.Tile.Max7219 do
   @rows Application.get_env(:matrix, :dimensions)[:tile_rows]
 
   # matrix in tiles
-  @matrix_widht Application.get_env(:matrix, :dimensions)[:weight]
+  @matrix_widht Application.get_env(:matrix, :dimensions)[:width]
   @matrix_height Application.get_env(:matrix, :dimensions)[:height]
 
   # WARNING: команды для микросхемы MAX7219
@@ -112,7 +112,7 @@ defmodule Context.Tile.Max7219 do
     |> Enum.map(&translate_coord_to_max7219/1)
     |> group_coord_by_row
     |> __matrix_coords__
-    |> Context.Tile.Helpers.transpose
+    |> Context.Tile.Helpers.transpose()
     |> Enum.map(&transform_to_spi/1)
   end
 

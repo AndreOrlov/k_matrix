@@ -6,8 +6,28 @@ defmodule Context.Tile do
   @rows Application.get_env(:matrix, :dimensions)[:tile_rows]
 
   # matrix in tiles
-  @matrix_width Application.get_env(:matrix, :dimensions)[:weight]
+  @matrix_width Application.get_env(:matrix, :dimensions)[:width]
   @matrix_height Application.get_env(:matrix, :dimensions)[:height]
+
+  # Очередность следования tiles в эл. схеме матрицы. Подробности в config.exs
+  @order_tiles Application.get_env(:matrix, :dimensions)[:order]
+
+  # Compile time validations
+
+  len = length(@order_tiles)
+
+  length(Enum.uniq(@order_tiles)) == len ||
+    raise "@order_tiles has duplicate"
+
+  len == @matrix_width * @matrix_height ||
+    raise "Length @order_tiles not equal (@matrix_width * @matrix_height)"
+
+  {min, max} = Enum.min_max(@order_tiles)
+
+  (min == 0 && max < len) ||
+    raise "@order_tiles min(#{min}), max(#{max}) out of range 0..#{len - 1}"
+
+  # validations end
 
   defmacro is_valid_coord(y, x) do
     quote do
@@ -45,6 +65,14 @@ defmodule Context.Tile do
     |> Enum.map(fn coords_tile ->
       Enum.filter(coords_tile, & &1)
     end)
+    |> sort_tiles()
+  end
+
+  defp sort_tiles(coord_by_tiles, order \\ @order_tiles)
+  defp sort_tiles(_coord_by_tiles, []), do: []
+
+  defp sort_tiles(coord_by_tiles, [head | tail]) do
+    [Enum.at(coord_by_tiles, head) | sort_tiles(coord_by_tiles, tail)]
   end
 
   def div_rem(dividend, divisor),

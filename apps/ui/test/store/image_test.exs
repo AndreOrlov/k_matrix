@@ -28,7 +28,7 @@ defmodule Store.ImageTest do
       # одинаковые координаты сольются
       res = {:ok, %{qty_cols: 1, qty_rows: 1}}
 
-      :ok = Store.Image.put_image_coords(coords, {1, 1}) |> IO.inspect()
+      :ok = Store.Image.put_image_coords(coords, {1, 1})
 
       assert res == Store.Image.qty_matrices()
     end
